@@ -2,6 +2,7 @@ site_name: CS 168 Textbook
 site_url: ""
 docs_dir: docs
 site_dir: site
+use_directory_urls: false
 
 theme:
   name: material
