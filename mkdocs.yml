@@ -1,5 +1,7 @@
 site_name: CS 168 Textbook
 site_url: ""
+repo_url: https://github.com/xjn2005/cs168-textbook-zh
+repo_name: xjn2005/cs168-textbook-zh
 docs_dir: docs
 site_dir: site
 use_directory_urls: false
