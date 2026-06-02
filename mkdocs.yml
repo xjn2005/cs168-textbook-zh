@@ -1,0 +1,120 @@
+site_name: CS 168 Textbook
+site_url: ""
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.indexes
+    - toc.follow
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+  palette:
+    scheme: default
+    primary: indigo
+    accent: indigo
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - stylesheets/cs168.css
+
+plugins:
+  - search:
+      lang:
+        - en
+        - zh
+
+nav:
+  - 首页: index.md
+  - Introduction:
+      - intro/index.md
+      - Introduction to the Internet: intro/intro.md
+      - Layers of the Internet: intro/layers.md
+      - Headers: intro/headers.md
+      - Network Architecture: intro/architecture.md
+      - Designing Resource Sharing: intro/sharing-resources.md
+      - Links: intro/links.md
+  - Routing:
+      - routing/index.md
+      - Introduction to Routing: routing/intro.md
+      - Model for Intra-Domain Routing: routing/model.md
+      - Routing States: routing/solutions.md
+      - Distance-Vector Protocols: routing/distance-vector.md
+      - Link-State Protocols: routing/link-state.md
+      - Addressing: routing/addressing.md
+      - Router Hardware: routing/router.md
+      - Model for Inter-Domain Routing: routing/autonomous-systems.md
+      - Border Gateway Protocol (BGP): routing/bgp.md
+      - BGP Implementation and Issues: routing/bgp-implementation.md
+      - IP Header: routing/ip-header.md
+  - Transport:
+      - transport/index.md
+      - Transport Layer Principles: transport/reliability.md
+      - TCP Design: transport/tcp-design.md
+      - TCP Implementation: transport/tcp-implementation.md
+      - Congestion Control Principles: transport/cc-principles.md
+      - Congestion Control Design: transport/cc-design.md
+      - Congestion Control Implementation: transport/cc-implementation.md
+      - TCP Throughput Model: transport/throughput-model.md
+      - Congestion Control Issues: transport/cc-issues.md
+      - Router-Assisted Congestion Control: transport/router-based-cc.md
+  - Applications:
+      - applications/index.md
+      - DNS: applications/dns.md
+      - HTTP: applications/http.md
+  - End-to-End:
+      - end-to-end/index.md
+      - Ethernet: end-to-end/ethernet.md
+      - Layer 2 Routing (STP): end-to-end/l2-routing.md
+      - "ARP: Connecting Layers 2 and 3": end-to-end/arp.md
+      - "DHCP: Joining Networks": end-to-end/dhcp.md
+      - "NAT: Network Address Translation": end-to-end/nat.md
+      - "TLS: Secure Bytestreams": end-to-end/tls.md
+      - End-to-End Connectivity: end-to-end/end-to-end.md
+  - Datacenters:
+      - datacenter/index.md
+      - Topologies: datacenter/topology.md
+      - Congestion Control: datacenter/datacenter-cc.md
+      - Routing: datacenter/datacenter-routing.md
+      - Addressing: datacenter/datacenter-addressing.md
+      - Virtualization: datacenter/virtualization.md
+      - Software-Defined Networking: datacenter/sdn.md
+      - Host Networking: datacenter/host-networking.md
+  - Beyond Client-Server:
+      - beyond-client-server/index.md
+      - Multicast: beyond-client-server/intro.md
+      - IP Multicast: beyond-client-server/ip-multicast-service-model.md
+      - DVMRP: beyond-client-server/dvmrp.md
+      - Core-Based Trees: beyond-client-server/cbt.md
+      - IP Multicast Challenges: beyond-client-server/ip-multicast-challenges.md
+      - Overlay Multicast: beyond-client-server/overlay-multicast.md
+      - Collective Operations: beyond-client-server/collective-operations.md
+      - Collective Implementations: beyond-client-server/collective-implementations.md
+  - Wireless:
+      - wireless/index.md
+      - Wireless Links: wireless/wireless-links.md
+      - Cellular: wireless/cellular.md
+  - Glossary: glossary.md

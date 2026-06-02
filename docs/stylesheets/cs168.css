@@ -1,0 +1,25 @@
+:root {
+  --md-text-font: "Noto Sans SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+  --md-code-font: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.md-typeset {
+  font-size: 0.78rem;
+  line-height: 1.75;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  letter-spacing: 0;
+}
+
+.md-typeset img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.md-typeset table:not([class]) {
+  font-size: 0.72rem;
+}
