@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy MkDocs to GitHub Pages
 
 on:
   push:
@@ -21,7 +21,13 @@ jobs:
         with:
           node-version: 20
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - run: npm install
+
+      - run: pip install mkdocs mkdocs-material
 
       - run: npm run docs:build
 
@@ -31,15 +37,10 @@ jobs:
 
   deploy:
     needs: build
-
     runs-on: ubuntu-latest
 
     environment:
       name: github-pages
-
-    permissions:
-      pages: write
-      id-token: write
 
     steps:
       - uses: actions/deploy-pages@v4
