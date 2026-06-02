@@ -113,8 +113,6 @@ $$\begin{align*}
 
 最后，$\frac{\lambda^2}{4\pi}$ 这一项与 receiver antenna 的 aperture（可以理解为面积）有关。直观地说，如果你把光照到一张纸上，光会落到纸上。如果纸更大，就会接住更多光。antenna 的 effective aperture（可以理解为有效面积）可以计算为 $\frac{\lambda^2}{4\pi}$，不过这里不证明。注意，等式中的 $(4\pi)^2$ 实际上来自两个 $4\pi$ 因子，一个来自 inverse-square law，另一个来自 effective aperture equation。
 
-% paper analogy from here: https://www.cdt21.com/design_guide/friis-equation-and-antenna-effective-area/#What_is_the_effective_area_of_an_antenna
-
 我们还可以把 Friis equation 两边都除以 $P_t$，改写为：
 
 $$\frac{P_r}{P_t} = G_t \cdot G_r \cdot \left(\frac{\lambda}{4\pi d}\right)^2$$
