@@ -4,7 +4,7 @@
 
 翻译过程中尽量保持原意，兼顾可读性，希望能为中文读者提供一份高质量的计算机网络学习资料。
 
-在线阅读：https://xjn2005.github.io/cs168-textbook/
+在线阅读：[Textbook](https://xjn2005.github.io/cs168-textbook-zh/)
 
 ## 本地运行
 
