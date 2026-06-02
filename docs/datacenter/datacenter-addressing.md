@@ -19,7 +19,7 @@ layout: page-with-toc
 
 ## Topology-Aware Addressing
 
-<img width="900px" src="/assets/datacenter/6-042-dc-addressing.png">
+<img width="900px" src="../assets/datacenter/6-042-dc-addressing.png">
 
 在这个特定 topology 中，rack 在建筑里被物理组织成不同 pod。一种自然的方法，是给每个 pod 分配一个地址范围。然后，每个 pod 可以给 pod 内的每个 rack 分配子范围。最后，每个 rack 可以给每台 server 分配一个单独的 IP address。
 

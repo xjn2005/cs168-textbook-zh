@@ -13,7 +13,7 @@ layout: page-with-toc
 
 回顾上一单元，我们可以把 Internet 看作一组机器，它们通过一组 link（链路）连接在一起，其中每条 link 连接 network 上的两台机器。
 
-<img width="900px" src="/assets/routing/2-002-network-of-networks.png">
+<img width="900px" src="../assets/routing/2-002-network-of-networks.png">
 
 我们可以把 network topology（网络拓扑）表示成 graph（图）：每个 node（节点）表示一台机器，两个 node 之间的每条 edge（边）表示两台机器之间的一条 link。
 
@@ -25,7 +25,7 @@ layout: page-with-toc
 
 但如果我们有五台机器，而不是两台呢？一种可能的方法是在每一对机器之间都建立一条 link，使每台机器都连接到其他每台机器。这有时称为 full mesh topology（全互连拓扑）。
 
-<img width="300px" src="/assets/routing/2-005-mesh.png">
+<img width="300px" src="../assets/routing/2-005-mesh.png">
 
 这种方法有哪些缺点？
 
@@ -39,7 +39,7 @@ layout: page-with-toc
 
 除了 full mesh topology，我们还有其他部署 link 的方式来连接多台机器。例如，我们可以用一条 single link 连接全部五台机器：
 
-<img width="300px" src="/assets/routing/2-006-single-link.png">
+<img width="300px" src="../assets/routing/2-006-single-link.png">
 
 （这里，我们暂时打破「一条 link 只连接两台机器」这个假设，考虑一条连接两台以上机器的 link。）
 
@@ -57,7 +57,7 @@ layout: page-with-toc
 
 相比之下，**router（路由器）** 是连接到 Internet、负责接收 intermediate packet 并把它们继续转发得更接近最终目的地的机器。例如，可以考虑安装在你家中 network 里的 router，或者部署在某个 data center 建筑中的 router。这些机器通常不会自己创建并发送新的 packet，也通常不是 packet 的最终目的地。例如，在日常使用 Internet 时，你可能想把 packet 发给 Google web server 来进行搜索，但你大概不需要直接给家里的 router 或某个 data center 发送消息。这些 router 会帮助你把 packet 转发到 Google，但它们并不是你的 packet 的最终目的地。
 
-<img width="900px" src="/assets/routing/2-007-host-router.png">
+<img width="900px" src="../assets/routing/2-007-host-router.png">
 
 根据 network design，router 也可以是合法的目的地；但在本单元中，我们会忽略作为目的地的 router。不过，请注意 router 可能作为 source（源）来发送自己的新 packet。
 
@@ -67,19 +67,19 @@ Router 有时也称为 switch。Router 和 switch 在历史上存在差异，但
 
 在这些讲义中，只要可能，我们都会把 router 画成方形，把 end host 画成圆形。在实践中，router 有时会用其他符号表示。例如，下面是 network diagram 中常见的 router 符号：
 
-<img width="100px" src="/assets/routing/2-008-router-icon.png">
+<img width="100px" src="../assets/routing/2-008-router-icon.png">
 
 ## 带 Router 的 Network Topology
 
 现在，除了 end host，我们还有 router，因此可以构建如下更复杂的 network topology：
 
-<img width="400px" src="/assets/routing/2-009-router-topology.png">
+<img width="400px" src="../assets/routing/2-009-router-topology.png">
 
 这种 topology 让我们结合了前面 full mesh topology 和 single-link topology 的优点。特别是，它使用的 link 数量少于前面的 full mesh topology。同时，它提供的 bandwidth 又高于前面的 single-link topology。
 
 这种 topology 对 failure（故障）也更 robust（稳健）。如果某条 link 失效，packet 可以沿着 network 中的另一条路径前进，并仍然到达目的地。
 
-<img width="900px" src="/assets/routing/2-010-different-path.png">
+<img width="900px" src="../assets/routing/2-010-different-path.png">
 
 
 ## Routing 中的 End Host
@@ -99,7 +99,7 @@ Routing protocol 并不关心应用层数据。用户想发送的是图片、HTM
 
 在 header 中，我们关心的主要 metadata 字段是 destination address（目的地址）。它告诉我们 packet 的最终目的地。当 router 收到 packet 时，router 会读取 header 中的 metadata 字段，决定如何把 packet 发往最终目的地。弄清楚应该把 packet 发到哪里，是 routing 中需要解决的核心问题。
 
-<img width="200px" src="/assets/routing/2-011-header.png">
+<img width="200px" src="../assets/routing/2-011-header.png">
 
 ## Addressing
 
@@ -127,7 +127,7 @@ Routing protocol 并不关心应用层数据。用户想发送的是图片、HTM
 
 让 routing 变得困难的另一个问题是：router 本身并没有整个 network 的 global、bird's-eye view（全局鸟瞰视图）。例如，如果 network 中其他地方的某条 link 失效，并没有办法让所有 router 自动知道这件事。我们必须以某种方式，作为 routing protocol 的一部分，把新的 network topology 信息传播给各个 router。
 
-<img width="900px" src="/assets/routing/2-012-non-global.png">
+<img width="900px" src="../assets/routing/2-012-non-global.png">
 
 这使得 routing protocol 往往是 distributed protocol（分布式协议）。不是由一个中央控制者计算出所有答案，而是每个 router 必须计算出答案中属于自己的部分（可能并不了解完整的 network topology）。所有 router 各自计算出的答案合在一起，必须形成 routing 问题的全局答案，使 packet 能够到达最终目的地。
 

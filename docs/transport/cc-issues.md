@@ -19,7 +19,7 @@ TCP 通过检查 packet loss 来检测 congestion，但 congestion 并不是 pac
 
 假设有一个 connection，sender 只有 3 个 packet 要发送。TCP congestion control 会怎么做？我们会从 window size 1 开始，发送第一个 packet。然后，等待 ack，把 window size 增加到 2，并发送剩下两个 packet。然后，再等待两个 ack，完成传输。
 
-<img width="400px" src="/assets/transport/3-091-short-flow.png">
+<img width="400px" src="../assets/transport/3-091-short-flow.png">
 
 这个 connection 花了两个 RTT 才发送 3 个 packet，导致 throughput 极低（每个 RTT 1.5 个 packet）。
 
@@ -39,7 +39,7 @@ TCP 使用 loss 检测 congestion，而 congestion control 算法会有意提高
 
 为了避免队列被填满，我们可以寻找一种不需要故意触发 loss 的 congestion 测量方法。特别是，我们可以在 RTT 开始增加时检测 congestion，因为这表示 delay。这就是 Google 近期 BBR algorithm（2016）背后的思想。sender 学习自己的最小 RTT，并且如果开始注意到 RTT 超过最小值，就降低速率。
 
-<img width="600px" src="/assets/transport/3-092-delay-based-taxonomy.png">
+<img width="600px" src="../assets/transport/3-092-delay-based-taxonomy.png">
 
 ## 作弊
 
@@ -47,7 +47,7 @@ TCP 使用 loss 检测 congestion，而 congestion control 算法会有意提高
 
 例如，sender 可以更快增加 window（例如每个 RTT +2，而不是 +1）。如果把我们的图形模型应用到一个作弊 sender 和一个诚实 sender 上，AIMD 更新实际上会收敛到一条糟糕的公平线，在那里作弊 sender 得到的带宽是诚实 sender 的两倍。
 
-<img width="600px" src="/assets/transport/3-093-cheating-aimd.png">
+<img width="600px" src="../assets/transport/3-093-cheating-aimd.png">
 
 也存在许多其他修改 protocol 的方式，例如从非常大的 initial congestion window 开始。
 

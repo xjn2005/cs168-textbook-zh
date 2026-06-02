@@ -19,22 +19,22 @@ layout: page-with-toc
 
 本节会聚焦实现 AllReduce collective，不过这些思想也可以应用到其他 collective。回忆一下，AllReduce 会计算 vector 的 element-wise sum，然后把 sum vector 发送给所有 node。
 
-<img width="900px" src="/assets/beyond-client-server/7-082-allreduce-reminder.png">
+<img width="900px" src="../assets/beyond-client-server/7-082-allreduce-reminder.png">
 
 
 ## 方法 1：Full Mesh
 
 首先考虑的 topology 是 full-mesh，其中每个 node 都有一条 direct link 连到每个其他 node。
 
-<img width="900px" src="/assets/beyond-client-server/7-083-mesh-1.png">
+<img width="900px" src="../assets/beyond-client-server/7-083-mesh-1.png">
 
 使用这个 topology，可以按以下步骤实现 AllReduce：首先，每个人把自己的整个 vector 直接发送给每个其他 node。
 
-<img width="900px" src="/assets/beyond-client-server/7-084-mesh-2.png">
+<img width="900px" src="../assets/beyond-client-server/7-084-mesh-2.png">
 
 然后，每个 node 对自己收到的所有 vector 求和。
 
-<img width="900px" src="/assets/beyond-client-server/7-085-mesh-3.png">
+<img width="900px" src="../assets/beyond-client-server/7-085-mesh-3.png">
 
 这种方法使用多少 bandwidth？每个 node 都需要把自己的整个 vector（$D$ bytes）发送给另外 $p-1$ 个 node，所以每个 node 发送 $D(p-1)$ bytes。总共有 $p$ 个 node，因此发送的总 data 是 $Dp(p-1) = O(D \cdot p^2)$ bytes。
 
@@ -45,15 +45,15 @@ layout: page-with-toc
 
 在下一个 topology 中，我们让一个单独 node 完成全部 computation work：
 
-<img width="900px" src="/assets/beyond-client-server/7-086-root-1.png">
+<img width="900px" src="../assets/beyond-client-server/7-086-root-1.png">
 
 运行 AllReduce：首先，所有人（除了 Node 1）把自己的 vector 发送给 Node 1。
 
-<img width="800px" src="/assets/beyond-client-server/7-087-root-2.png">
+<img width="800px" src="../assets/beyond-client-server/7-087-root-2.png">
 
 然后，Node 1 计算 sum，并把 sum 发送回所有人。
 
-<img width="900px" src="/assets/beyond-client-server/7-088-root-3.png">
+<img width="900px" src="../assets/beyond-client-server/7-088-root-3.png">
 
 这种方法使用多少 bandwidth？每个 node（除了 Node 1）都需要把自己的整个 vector 发送给 Node 1，也就是发送 $D$ bytes。有 $p-1$ 个 node 需要发送 data，所以第一步发送的总 data 是 $D(p-1)$ bytes。
 
@@ -72,29 +72,29 @@ layout: page-with-toc
 
 在下一个 topology 中，我们构建一棵 binary tree。记住，这里的 binary 意味着每个 node 最多有 2 个 child。
 
-<img width="800px" src="/assets/beyond-client-server/7-089-tree-1.png">
+<img width="800px" src="../assets/beyond-client-server/7-089-tree-1.png">
 
 运行 AllReduce：从底部 leaf node 开始，每个 node 把自己的 vector 发送给 parent。
 
-<img width="800px" src="/assets/beyond-client-server/7-090-tree-2.png">
+<img width="800px" src="../assets/beyond-client-server/7-090-tree-2.png">
 
 当你收到所有 child 的 vector 后，应该把它们和自己的 vector 求和。
 
-<img width="800px" src="/assets/beyond-client-server/7-091-tree-3.png">
+<img width="800px" src="../assets/beyond-client-server/7-091-tree-3.png">
 
 然后，你应该把得到的 sum vector 发送给 parent。
 
-<img width="700px" src="/assets/beyond-client-server/7-092-tree-4.png">
+<img width="700px" src="../assets/beyond-client-server/7-092-tree-4.png">
 
 沿着 tree 的所有 layer 重复这个步骤后，root 应该已经计算出了 overall sum。
 
-<img width="700px" src="/assets/beyond-client-server/7-093-tree-5.png">
+<img width="700px" src="../assets/beyond-client-server/7-093-tree-5.png">
 
 然后，在第二步中，root 把 overall sum vector 沿 tree 向下发送给自己的 child。当你从 parent 收到 sum vector 后，应该把这个 sum vector 的副本发送给所有 child。
 
-<img width="800px" src="/assets/beyond-client-server/7-094-tree-6.png">
+<img width="800px" src="../assets/beyond-client-server/7-094-tree-6.png">
 
-<img width="800px" src="/assets/beyond-client-server/7-095-tree-7.png">
+<img width="800px" src="../assets/beyond-client-server/7-095-tree-7.png">
 
 这种方法使用多少 bandwidth？在 Step 1 中，每个 node 最多从 child 接收 2 个 vector（回忆一下：tree 是 binary 的），并向 parent 发送 1 个 vector。这给出每个 node $3D$ bytes 的 upper-bound，因此 Step 1 总共是 $3D \cdot p$ bytes。
 
@@ -113,37 +113,37 @@ layout: page-with-toc
 
 最后两种方法中，我们会构建一个 ring-shaped topology。注意，Node 1 到 Node 5 的 wrap-around link 和其他 link 没有什么特别之处（也就是说，这条 link 更长并不代表任何特殊含义）。
 
-<img width="900px" src="/assets/beyond-client-server/7-096-naive-ring-1.png">
+<img width="900px" src="../assets/beyond-client-server/7-096-naive-ring-1.png">
 
 naive 地运行 AllReduce：Node 5 首先把自己的 vector 向左发送。
 
-<img width="900px" src="/assets/beyond-client-server/7-097-naive-ring-2.png">
+<img width="900px" src="../assets/beyond-client-server/7-097-naive-ring-2.png">
 
 当你从右侧 neighbor 收到一个 vector 时，应该把它和自己的 vector 求和。
 
-<img width="900px" src="/assets/beyond-client-server/7-098-naive-ring-3.png">
+<img width="900px" src="../assets/beyond-client-server/7-098-naive-ring-3.png">
 
 然后，你应该把得到的 sum vector 发送给左侧 neighbor。
 
-<img width="900px" src="/assets/beyond-client-server/7-099-naive-ring-4.png">
+<img width="900px" src="../assets/beyond-client-server/7-099-naive-ring-4.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-100-naive-ring-5.png">
+<img width="900px" src="../assets/beyond-client-server/7-100-naive-ring-5.png">
 
 最终，这个过程会绕完整个 loop。
 
-<img width="900px" src="/assets/beyond-client-server/7-101-naive-ring-6.png">
+<img width="900px" src="../assets/beyond-client-server/7-101-naive-ring-6.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-102-naive-ring-7.png">
+<img width="900px" src="../assets/beyond-client-server/7-102-naive-ring-7.png">
 
 为了完成第一步，Node 1 会计算 overall sum。
 
-<img width="900px" src="/assets/beyond-client-server/7-103-naive-ring-8.png">
+<img width="900px" src="../assets/beyond-client-server/7-103-naive-ring-8.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-104-naive-ring-9.png">
+<img width="900px" src="../assets/beyond-client-server/7-104-naive-ring-9.png">
 
 然后，在第二步中，我们会把 overall sum 沿着 loop 发送一圈，让每个人都有一份 copy。Node 5 首先把 overall sum 向左发送。当你从右侧 neighbor 收到 overall sum vector 时，应该把 sum vector 的副本发送给左侧 neighbor。最终，这个过程会绕完整个 loop，所有人都会收到 overall sum 的副本。
 
-<img width="900px" src="/assets/beyond-client-server/7-105-naive-ring-10.png">
+<img width="900px" src="../assets/beyond-client-server/7-105-naive-ring-10.png">
 
 这种方法使用多少 bandwidth？在 Step 1 中，每个 node 从右侧 neighbor 接收一个 vector，并向左侧 neighbor 发送一个 vector。这给出每个 node $2D$ bytes 的 upper-bound，因此 Step 1 总共是 $2D \cdot p$ bytes。
 
@@ -164,41 +164,41 @@ naive 地运行 AllReduce：Node 5 首先把自己的 vector 向左发送。
 
 为了创建更不 bursty、更均衡的 workload，我们可以错开 naive ring-based AllReduce 的步骤。一次性把整个 vector 向左发送，会给左侧 neighbor 带来一阵突发 work。相反，你可以增量地向左发送 vector：每个 time step 发送一个 element。
 
-<img width="900px" src="/assets/beyond-client-server/7-106-optimized-ring-1.png">
+<img width="900px" src="../assets/beyond-client-server/7-106-optimized-ring-1.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-107-optimized-ring-2.png">
+<img width="900px" src="../assets/beyond-client-server/7-107-optimized-ring-2.png">
 
 当你收到一个 single element（来自左侧）时，可以把这个 element 加到自己对应的 element 上。然后，你可以把得到的 sum（仍然是一个 single element）向左发送。
 
-<img width="900px" src="/assets/beyond-client-server/7-108-optimized-ring-3.png">
+<img width="900px" src="../assets/beyond-client-server/7-108-optimized-ring-3.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-109-optimized-ring-4.png">
+<img width="900px" src="../assets/beyond-client-server/7-109-optimized-ring-4.png">
 
 除了错开每个 vector 的发送，注意 starting point 也被错开了。之前的 starting point 是 Node 5 发送它的所有 element；现在改为让第 $i$ 个 node 先发送自己的第 $i$ 个 element。
 
-<img width="900px" src="/assets/beyond-client-server/7-110-optimized-ring-5.png">
+<img width="900px" src="../assets/beyond-client-server/7-110-optimized-ring-5.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-111-optimized-ring-6.png">
+<img width="900px" src="../assets/beyond-client-server/7-111-optimized-ring-6.png">
 
 通过沿这两个维度错开 operation（每个 node 一次发送一个 element，并且每个 node 从不同 element 开始），我们可以创建更均衡的 workload。在每个 time step，每个 node 都会从右侧收到恰好一个 element，计算一次 sum，并向左侧发送恰好一个 element。
 
-<img width="900px" src="/assets/beyond-client-server/7-112-optimized-ring-7.png">
+<img width="900px" src="../assets/beyond-client-server/7-112-optimized-ring-7.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-113-optimized-ring-8.png">
+<img width="900px" src="../assets/beyond-client-server/7-113-optimized-ring-8.png">
 
 如果重复这个过程 $p$ 次，那么每个 element 都会绕 ring 走完整整一圈。
 
-<img width="900px" src="/assets/beyond-client-server/7-114-optimized-ring-9.png">
+<img width="900px" src="../assets/beyond-client-server/7-114-optimized-ring-9.png">
 
 然而，并不是每个人都知道 sum vector 的所有 element，所以我们必须再绕 ring 一圈。就像 naive 方法一样，在第二圈中，当你收到 overall sum 的某个 element 时，只需要把它的副本发送给右侧。
 
-<img width="900px" src="/assets/beyond-client-server/7-115-optimized-ring-10.png">
+<img width="900px" src="../assets/beyond-client-server/7-115-optimized-ring-10.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-116-optimized-ring-11.png">
+<img width="900px" src="../assets/beyond-client-server/7-116-optimized-ring-11.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-117-optimized-ring-12.png">
+<img width="900px" src="../assets/beyond-client-server/7-117-optimized-ring-12.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-118-optimized-ring-13.png">
+<img width="900px" src="../assets/beyond-client-server/7-118-optimized-ring-13.png">
 
 观看这个 animated demo 时，可以关注我们在哪两个维度上错开 operation。如果你关注单独一列，会看到我们一次发送一个 element，也一次接收一个 element。
 
@@ -217,7 +217,7 @@ optimized ring-based AllReduce 的 bandwidth 和 time analysis 与 naive ring-ba
 
 答案是使用 overlay。我们可以画出 virtual link，把 host 连接成 ring topology：
 
-<img width="900px" src="/assets/beyond-client-server/7-119-ring-overlay-1.png">
+<img width="900px" src="../assets/beyond-client-server/7-119-ring-overlay-1.png">
 
 当 Node D 把自己的 vector 发送给 Node B 时，从 overlay 视角看，Node D 是沿着一条 single（virtual）link 把 vector 发送给自己的 direct neighbor。从 underlay 视角看，这个 vector 实际上必须经过 several hops 才能到达目的地 Node B。
 
@@ -229,15 +229,15 @@ optimized ring-based AllReduce 的 bandwidth 和 time analysis 与 naive ring-ba
 
 下面是两种可能的 node 编号方式：
 
-<img width="900px" src="/assets/beyond-client-server/7-120-ring-overlay-2.png">
+<img width="900px" src="../assets/beyond-client-server/7-120-ring-overlay-2.png">
 
 第一种方法的 average stretch 是 3.5。特别要注意，C-to-D 和 B-to-A 这两条 virtual link 需要穿过 underlay network 中许多 link。
 
-<img width="900px" src="/assets/beyond-client-server/7-121-ring-overlay-3.png">
+<img width="900px" src="../assets/beyond-client-server/7-121-ring-overlay-3.png">
 
 相比之下，第二种方法的 average stretch 是 2.5。这组 virtual link 让 ring 中相邻 link 在 network 中更接近。
 
-<img width="900px" src="/assets/beyond-client-server/7-122-ring-overlay-4.png">
+<img width="900px" src="../assets/beyond-client-server/7-122-ring-overlay-4.png">
 
 更一般地说，为了优化 ring-based AllReduce 的性能，我们希望相邻 node（例如 Node $i$ 和 Node $i+1$）在 network 中彼此接近。
 

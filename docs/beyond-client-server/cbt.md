@@ -13,11 +13,11 @@ Multicast routing 的目标仍然相同：我们有一个 destination 是 group 
 
 不过，现在我们会尝试一种不同方法，它与 DVMRP 完全不同。
 
-<img width="900px" src="/assets/beyond-client-server/7-032-cbt-taxonomy.png">
+<img width="900px" src="../assets/beyond-client-server/7-032-cbt-taxonomy.png">
 
 在 **Core-Based Tree（CBT）** 方法中，每个 destination group 都有自己的 tree。某个 destination group 的 CBT 就是一棵触达该 group 每个 member 的 tree。
 
-<img width="600px" src="/assets/beyond-client-server/7-033-cbt-end-goal.png">
+<img width="600px" src="../assets/beyond-client-server/7-033-cbt-end-goal.png">
 
 同时思考 CBT tree 和 DVMRP tree 可能会让人困惑。现在，你可以把它们看成完全不同、彼此没有共同点的 tree。
 
@@ -29,27 +29,27 @@ Multicast routing 的目标仍然相同：我们有一个 destination 是 group 
 
 如果某个 member 想加入 group，这个 member 会向 core unicast 一条 join message。这个 packet 会穿过若干 router 到达 core。所有这些 router 也会加入 tree，因此 tree 现在有了一条从 core 到新 member 的 path。
 
-<img width="800px" src="/assets/beyond-client-server/7-034-cbt-join-1.png">
+<img width="800px" src="../assets/beyond-client-server/7-034-cbt-join-1.png">
 
-<img width="600px" src="/assets/beyond-client-server/7-035-cbt-join-2.png">
+<img width="600px" src="../assets/beyond-client-server/7-035-cbt-join-2.png">
 
 更正式地说，如果你是一个 router，并且收到某个特定 group 的 join message，你就知道自己现在是这个 group 的 tree 的一部分。Join message 的 incoming link 是你的 child（指向远离 root 的 link）。Join message 的 outgoing link（到 root 的 next-hop）是你的 parent（指向 root 的 link）。你可以记下 parent 和 child，从而记住自己在 tree 中的位置。没有一个全局 mastermind 记住整棵 tree；tree 上的每个 router 都负责记住自己的 parent 和 child。
 
-<img width="900px" src="/assets/beyond-client-server/7-036-cbt-join-recap.png">
+<img width="900px" src="../assets/beyond-client-server/7-036-cbt-join-recap.png">
 
 如果某个 member 想离开 group，它可以向 tree 上自己的直接 parent unicast 一条 quit message。如果你在 tree 上的所有 child 都发送了 quit message，这意味着你也可以离开 tree，所以你可以向自己的直接 parent 发送 quit message。Quit message 会发送给直接 parent，不会再继续 forward。
 
-<img width="700px" src="/assets/beyond-client-server/7-037-cbt-leave-1.png">
+<img width="700px" src="../assets/beyond-client-server/7-037-cbt-leave-1.png">
 
-<img width="600px" src="/assets/beyond-client-server/7-038-cbt-leave-2.png">
+<img width="600px" src="../assets/beyond-client-server/7-038-cbt-leave-2.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-039-cbt-quit-recap.png">
+<img width="900px" src="../assets/beyond-client-server/7-039-cbt-quit-recap.png">
 
 记住，我们为每个 group 构建一棵 tree。这意味着 router 必须为自己所属的每棵 tree 记住 parent 和 child。另外，join 和 leave message 必须关联到特定 group，例如“我想加入 group G2”。
 
-<img width="600px" src="/assets/beyond-client-server/7-040-multiple-1.png">
+<img width="600px" src="../assets/beyond-client-server/7-040-multiple-1.png">
 
-<img width="600px" src="/assets/beyond-client-server/7-041-multiple-2.png">
+<img width="600px" src="../assets/beyond-client-server/7-041-multiple-2.png">
 
 下面是关于 core 的一些细节，不过它们不是这个 protocol 背后的主要直觉。
 - 由于 core 是一个 router，它有 unicast IP address，所有人都可以向 core 发送 unicast packet。
@@ -69,7 +69,7 @@ Multicast routing 的目标仍然相同：我们有一个 destination 是 group 
 
 更具体地说，你首先把 packet forward 给 tree 上的 parent。然后，tree 上的每个 router 收到 packet，并把 packet flood 到自己的所有 tree link（包括 parent link 和 child link）。
 
-<img width="700px" src="/assets/beyond-client-server/7-042-cbt-forwarding-1.png">
+<img width="700px" src="../assets/beyond-client-server/7-042-cbt-forwarding-1.png">
 
 情况 2：如果你不是 group member，你没有接触到这棵 tree，因此情况 1 的策略不可行。相反，你可以把 packet unicast 给 core。然后，core 可以把 message broadcast 给 tree 上的每个人。
 
@@ -77,7 +77,7 @@ Multicast routing 的目标仍然相同：我们有一个 destination 是 group 
 
 当 core 收到 packet 时，它解开 outer header，并看到内部的 multicast packet。然后，core 就可以沿 tree broadcast 这个 packet。和情况 1 一样，tree 上的每个 router 收到 packet，并把 packet flood 到自己的所有 tree link（parent 和 child link）。
 
-<img width="900px" src="/assets/beyond-client-server/7-043-cbt-forwarding-2.png">
+<img width="900px" src="../assets/beyond-client-server/7-043-cbt-forwarding-2.png">
 
 ## 好处：更好的扩展性
 
@@ -87,7 +87,7 @@ Multicast routing 的目标仍然相同：我们有一个 destination 是 group 
 
 注意，CBT 对所有 source 都相同。不同于 DVMRP（每个 source、每个 destination group 一棵 tree），现在我们只有每个 destination group 一棵 tree。
 
-<img width="900px" src="/assets/beyond-client-server/7-044-dvmrp-cbt-scaling.png">
+<img width="900px" src="../assets/beyond-client-server/7-044-dvmrp-cbt-scaling.png">
 
 比较 DVMRP tree 和 CBT tree 有助于理解 protocol 如何扩展，但除此之外，每个 protocol 中构建的 tree 语义完全不同。如果你感到困惑，可能更容易把这些 tree 看成完全分开的概念主题。
 
@@ -103,11 +103,11 @@ CBT 用效率换取扩展性。CBT 更可扩展，因为需要构建的 tree 更
 
 CBT 的效率高度依赖于选择哪个 router 作为 core。例如，考虑下面这个 topology 以及若干 core 选择。
 
-<img width="700px" src="/assets/beyond-client-server/7-045-core-choice-1.png">
+<img width="700px" src="../assets/beyond-client-server/7-045-core-choice-1.png">
 
-<img width="700px" src="/assets/beyond-client-server/7-046-core-choice-2.png">
+<img width="700px" src="../assets/beyond-client-server/7-046-core-choice-2.png">
 
-<img width="700px" src="/assets/beyond-client-server/7-047-core-choice-3.png">
+<img width="700px" src="../assets/beyond-client-server/7-047-core-choice-3.png">
 
 在每一种 core 选择中，至少有一对 router 由 suboptimal path 连接。我们不再有一棵从某个 source 到所有 group member 的 guaranteed shortest paths tree。
 

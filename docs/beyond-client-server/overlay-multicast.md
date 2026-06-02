@@ -15,17 +15,17 @@ layout: page-with-toc
 
 回忆一下 IP multicast 的一个主要问题：跨不同 network 实现 multicast 很困难。在这张图中，如果所有 host 都是同一个 group 的 member，那么跨不同 network 的 router 很难协调，并把 packet 发送给整个 group。
 
-<img width="900px" src="/assets/beyond-client-server/7-051-overlay-before.png">
+<img width="900px" src="../assets/beyond-client-server/7-051-overlay-before.png">
 
 这里的解决方案是构建一个直接把 host 彼此连接起来的 *virtual network topology*：
 
-<img width="900px" src="/assets/beyond-client-server/7-052-overlay-after.png">
+<img width="900px" src="../assets/beyond-client-server/7-052-overlay-after.png">
 
 这里画出的 virtual link 是一种虚构，它们并不真正对应现实生活中的 physical link。例如，如果 A 想沿这条 virtual link 向 D 发送 packet，这个 packet 仍然必须穿过若干真实 router 和 link。
 
 不过，通过画出这些 virtual link，我们现在可以假装所有 host 都在一个小型 local network 中彼此连接。这些 host 随后可以运行 multicast routing algorithm，在彼此之间 forward packet。
 
-<img width="900px" src="/assets/beyond-client-server/7-053-overlay-tables-1.png">
+<img width="900px" src="../assets/beyond-client-server/7-053-overlay-tables-1.png">
 
 例如，我们可以使用 virtual link 构建一棵以 D 为 root 的 core-based tree。然后，每个人都可以通过沿 tree 的 virtual link broadcast packet 来 multicast packet。
 
@@ -33,7 +33,7 @@ layout: page-with-toc
 
 在下面的例子中，A 正在向 G 发送一个 unicast packet。这个 packet 沿若干真实 router 和 link 传输到 G。途中，中间 host C 和 D 会接收并 forward 这个 packet。
 
-<img width="900px" src="/assets/beyond-client-server/7-055-overlay-forward-1.png">
+<img width="900px" src="../assets/beyond-client-server/7-055-overlay-forward-1.png">
 
 直观上，virtual network 给我们一种错觉：所有 host 都连接在一个小型 local network 中，尽管它们在现实中分散在世界各地。
 
@@ -45,17 +45,17 @@ layout: page-with-toc
 
 负责沿 virtual link 发送 packet 的真实 link 和 router 形成 **underlay network**。Underlay network router 彼此交谈，以运行标准 unicast routing algorithm（例如 distance-vector、BGP）。Underlay routing table 基于 physical link（例如 R1 的 table 可能会说，到 G 的 next-hop 是 R2）。
 
-<img width="900px" src="/assets/beyond-client-server/7-054-overlay-tables-2.png">
+<img width="900px" src="../assets/beyond-client-server/7-054-overlay-tables-2.png">
 
 为了实现 overlay 和 underlay network，我们会使用 encapsulation。假设我们想向 group address multicast 一个 packet。那么 inner header（overlay）会说 “From A, To G1”，host 会读取这个 overlay packet 来决定如何 forward packet。
 
 假设 Host A 决定这个 packet 需要沿 virtual link C forward。那么 Host A 会用 outer header “From A, To C” encapsulate 这个 packet，并把这个 packet unicast 给 C。Underlay 只使用 outer header，负责把 unicast packet 从 A forward 到 C。
 
-<img width="900px" src="/assets/beyond-client-server/7-056-overlay-forward-2.png">
+<img width="900px" src="../assets/beyond-client-server/7-056-overlay-forward-2.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-057-overlay-forward-3.png">
+<img width="900px" src="../assets/beyond-client-server/7-057-overlay-forward-3.png">
 
-<img width="900px" src="/assets/beyond-client-server/7-058-overlay-forward-4.png">
+<img width="900px" src="../assets/beyond-client-server/7-058-overlay-forward-4.png">
 
 ## 实现 Overlay Network
 
@@ -93,7 +93,7 @@ Overlay network 的性能高度依赖于你在 end host 之间画出的 virtual 
 
 例如，这个 overlay network topology 与对应的 underlay topology 非常接近。
 
-<img width="900px" src="/assets/beyond-client-server/7-059-underlay-1.png">
+<img width="900px" src="../assets/beyond-client-server/7-059-underlay-1.png">
 
 从 A 到 C 的 virtual link 可以分配较低 cost，因为现实中 A 和 C 距离较近（underlay path 穿过 3 个 router）。从 D 到 G 的 virtual link 可以分配较高 cost，因为现实中 D 和 G 距离更远（underlay path 穿过 5 个 router）。如果我们在 overlay topology 中计算 shortest path，得到的 path 应该和 underlay topology 中的 shortest path 很相似。让 packet 在 underlay 中走短 path 是理想的，因为 packet 最终仍然要通过 underlay network forward。
 
@@ -101,7 +101,7 @@ Overlay network 的性能高度依赖于你在 end host 之间画出的 virtual 
 
 下面是一个 overlay network 糟糕建模对应 underlay topology 的例子。
 
-<img width="900px" src="/assets/beyond-client-server/7-060-underlay-2.png">
+<img width="900px" src="../assets/beyond-client-server/7-060-underlay-2.png">
 
 注意，我们没有改变 underlay topology 的任何东西。我们只改变了 virtual link 的放置方式。
 
@@ -109,7 +109,7 @@ Overlay network 的性能高度依赖于你在 end host 之间画出的 virtual 
 
 为了衡量 overlay network 的性能，我们可以定义 **stretch factor**。它是 underlay path cost 与 overlay path cost 的比值。
 
-<img width="700px" src="/assets/beyond-client-server/7-061-stretch.png">
+<img width="700px" src="../assets/beyond-client-server/7-061-stretch.png">
 
 在上面的例子中，underlay cost 是 4，overlay cost 是 1，因此 stretch factor 是 4。为了更好地建模 underlay network，把这条 virtual link 的 cost 设为 4 可能更合理。
 

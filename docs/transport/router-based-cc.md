@@ -31,11 +31,11 @@ router 如何确保每个 connection 得到自己的公平份额？
 
 如果所有 packet 大小相同，那么 router 可以按 round-robin 选择 queue（先从第一个 queue 发送，然后从第二个 queue 发送，依此类推）。事实证明，即使不是所有 connection 都需要相同带宽，这个方法也可行。有些 connection 排队 packet 的速度可能比其他 connection 更慢。如果把 round-robin 服务应用到不同带宽需求的 connection 上，我们如何计算分配给每个 connection 的带宽？例如，假设我们每秒可以发送 10 个 packet，而 A、B、C 分别每秒发送 8、6、2 个 packet。
 
-<img width="500px" src="/assets/transport/3-094-fair-queuing-1.png">
+<img width="500px" src="../assets/transport/3-094-fair-queuing-1.png">
 
 如果按 round-robin 发送 packet，每种类型每秒会发送多少 packet？我们可以把这建模为一个资源分配问题，并求解它。
 
-<img width="600px" src="/assets/transport/3-095-fair-queuing2.png">
+<img width="600px" src="../assets/transport/3-095-fair-queuing2.png">
 
 例如，假设 link capacity 是 10。Connection A 请求 8，B 请求 6，C 请求 2。我们应该如何在三个 connection 之间分配容量？如果试图公平分配，每个人都会收到 3.33。但 C 只请求了 2，所以我们给 C 它请求的 2，不额外给。
 
@@ -55,7 +55,7 @@ router 如何确保每个 connection 得到自己的公平份额？
 
 下面是两个 connection 上精确 bit-by-bit fair queuing 的例子（如果出现平局，我们选择先到达的 packet）。
 
-<img width="900px" src="/assets/transport/3-096-fair-queuing3.png">
+<img width="900px" src="../assets/transport/3-096-fair-queuing3.png">
 
 ## 实践中的 Fair Queuing
 

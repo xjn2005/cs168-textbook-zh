@@ -21,7 +21,7 @@ layout: page-with-toc
 
 出于实践上的原因（其他地方会讨论），可靠性在 end host 上实现，而不是在中间 router 上实现。另外，为了方便，可靠性通常实现在操作系统中，这样应用就不需要各自重新实现一套可靠性机制。
 
-<img width="900px" src="/assets/transport/3-007-reliability-at-end-hosts.png">
+<img width="900px" src="../assets/transport/3-007-reliability-at-end-hosts.png">
 
 我们先用 **at-least-once delivery**（至少一次递送）来形式化可靠性。在这个模型中，目的地必须至少一次收到每个 packet，并且 packet 不能损坏；但目的地可能收到同一个 packet 的多个重复副本。传输层会利用 best-effort delivery 来提供 at-least-once delivery。然后，我们的 protocol 可以在 at-least-once delivery 的基础上删除重复副本，为应用提供 exactly-once delivery。
 
@@ -43,15 +43,15 @@ layout: page-with-toc
 
 假设我的个人计算机上有两个应用，它们都在和同一个 server 通信。当 packet 到达我的个人计算机时，它们有相同的 source IP address（server）和相同的 destination IP address（我的计算机）。我怎么判断哪些 packet 属于哪个应用？
 
-<img width="900px" src="/assets/transport/3-001-demultiplex.png">
+<img width="900px" src="../assets/transport/3-001-demultiplex.png">
 
 为了区分，也就是 **demultiplex**，哪些 packet 属于哪个应用，transport layer header 中包含一个额外的 **port number**，可以用来识别 end host 上的某个具体应用。
 
-<img width="900px" src="/assets/transport/3-002-ports.png">
+<img width="900px" src="../assets/transport/3-002-ports.png">
 
 当传输层收到一个 packet 时，它可以使用 port number 决定 payload 应该交给哪个更高层的应用。因为传输层实现在操作系统中，这些 port（有时称为 **logical port**）就是应用连接到操作系统网络栈的位置。应用知道自己的 port number，操作系统知道所有应用的 port number，匹配的编号让数据可以在应用和操作系统之间明确传递，而不会和其他应用的数据混在一起。
 
-<img width="800px" src="/assets/transport/3-003-port-attachment.png">
+<img width="800px" src="../assets/transport/3-003-port-attachment.png">
 
 port number 长度为 16 bit。现代 Internet 通常使用 client-server 设计：client 访问服务，server 提供服务。server 通常在 well-known port（端口号 0-1023）上监听请求。client 知道这些 port，并且可以访问它们来请求服务。例如，带有 well-known port number 的应用层 protocol 包括 HTTP（port 80）和 SSH（port 22）。
 
@@ -61,7 +61,7 @@ port number 长度为 16 bit。现代 Internet 通常使用 client-server 设计
 
 在传输层实现可靠性意味着，应用开发者不再需要从一个个大小受限、在网络中发送的 packet 角度思考。相反，开发者可以从 **可靠、有序的 bytestream** 角度思考。sender 有一条没有长度限制的字节流，并把这条流交给传输层。然后，recipient 会以相同顺序收到完全相同的字节流，并且没有字节丢失。你可以把 bytestream 想象成一根管道：sender 把字节一个接一个放进管道，同样的字节会一个接一个从 recipient 这一端出现。sender 和 recipient 不需要考虑重发丢失的 packet，也不需要考虑 packet 乱序到达，因为传输层 protocol 会替开发者实现这些事情。
 
-<img width="900px" src="/assets/transport/3-004-bytestream.png">
+<img width="900px" src="../assets/transport/3-004-bytestream.png">
 
 ## UDP 和 Datagram
 
@@ -69,11 +69,11 @@ port number 长度为 16 bit。现代 Internet 通常使用 client-server 设计
 
 不需要可靠性的应用可以在传输层使用 **UDP**（User Datagram Protocol），而不是 TCP。UDP 不提供可靠性保证。如果应用需要某个 packet 到达，应用必须自己处理 packet 重发（传输层不会重发 packet）。UDP 中的消息限制为单个 packet。如果应用想发送更大的消息，应用需要负责拆分并重新组装这些消息。不过要注意，UDP 仍然实现了用于 demultiplexing 的 port 概念。
 
-<img width="900px" src="/assets/transport/3-005-datagram.png">
+<img width="900px" src="../assets/transport/3-005-datagram.png">
 
 在传输层，你可以根据需求选择使用 UDP 或 TCP，但不能同时选择二者。UDP 和 TCP 是现代 Internet 中标准的传输层 protocol。
 
-<img width="300px" src="/assets/transport/3-006-tcp-features.png">
+<img width="300px" src="../assets/transport/3-006-tcp-features.png">
 
 ## 其他可靠性设计
 

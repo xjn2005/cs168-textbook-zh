@@ -25,7 +25,7 @@ layout: page-with-toc
 
 从 \(\frac{1}{2} W_\text{max}\) 开始并达到 \(W_\text{max}\)，需要 \(\frac{1}{2} W_\text{max}\) 个 RTT（每次迭代加 1，每次迭代是一个 RTT）。这也告诉我们，每两次 loss 之间有 \(\frac{1}{2} W_\text{max}\) 个 RTT。
 
-<img width="900px" src="/assets/transport/3-088-equation1.png">
+<img width="900px" src="../assets/transport/3-088-equation1.png">
 
 在每个 RTT 内，平均 window size 是 \(\frac{3}{4} W_\text{max}\)（正好位于 \(\frac{1}{2} W_\text{max}\) 和 \(W_\text{max}\) 之间）。
 
@@ -43,7 +43,7 @@ window size 告诉我们每个 RTT 中可以发送多少数据。因此，为了
 
 所以，为了确定 loss rate，我们只需要弄清楚在 \(\frac{1}{2} W_\text{max}\) 个 RTT 中发送了多少 packet。
 
-<img width="900px" src="/assets/transport/3-089-equation2.png">
+<img width="900px" src="../assets/transport/3-089-equation2.png">
 
 从图形上看，发送的 packet 数量就是这个形状的面积（rate times time），等价地说，是曲线下方的面积（曲线表示 rate，而我们想要 rate 的积分）。
 
@@ -80,7 +80,7 @@ throughput 与 RTT 成反比。直觉上，如果 RTT 更低，那么 throughput
 
 如果有多个 RTT 不同的 connection，RTT 和 throughput 之间的这种关系可能会成为问题。
 
-<img width="600px" src="/assets/transport/3-090-multi-flow.png">
+<img width="600px" src="../assets/transport/3-090-multi-flow.png">
 
 RTT 更低的 connection 会更快收到 ack，这意味着这个 connection 也会更快增加自己的 window size，并更快发送 packet。在这种情况下，结果是低 RTT connection 得到的带宽是高 RTT connection 的两倍。
 

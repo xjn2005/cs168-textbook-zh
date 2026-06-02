@@ -11,11 +11,11 @@ layout: page-with-toc
 
 So far, in our model of the Internet, we've shown end hosts sending packets to each other. The end host might be a client machine (e.g. your local computer), or a server (e.g. YouTube). But, is YouTube really a single machine on the Internet serving videos to the entire world?
 
-<img width="800px" src="/assets/datacenter/6-001-single-server.png">
+<img width="800px" src="../assets/datacenter/6-001-single-server.png">
 
 In reality, YouTube is an entire building of interconnected machines, working together to serve videos to clients. All these machines are in the same local network, and can communicate with each other to fulfill requests (e.g. if the video you requested is stored across different machines).
 
-<img width="800px" src="/assets/datacenter/6-002-many-servers.png">
+<img width="800px" src="../assets/datacenter/6-002-many-servers.png">
 
 Recall that in the network-of-network model of the Internet, each operator is free to manage their local network however they want. In this section, we'll focus on local networks dedicated to connecting servers inside a datacenter (as opposed to users like your personal computer). We'll talk about challenges unique to these local networks, and specialized solutions to networking problems (e.g. congestion control and routing) that are specifically designed to work well in datacenter contexts.
 
@@ -27,17 +27,17 @@ A datacenter is usually owned by a single organization (e.g. Google, Amazon), an
 
 Our focus is on modern hyperscale datacenters, operated by tech giants like Google and Amazon. The large scale introduces some unique challenges, but the concepts we'll see also work at smaller scales.
 
-<img width="900px" src="/assets/datacenter/6-003-wan1.png">
+<img width="900px" src="../assets/datacenter/6-003-wan1.png">
 
 This map shows the wide area network (WAN) of all the networks owned by a tech giant like Google.
 
 The peering locations connect Google to the rest of the Internet. These mainly consist of Google-operated routers that connect to other autonomous systems.
 
-<img width="900px" class="real-photo" src="/assets/datacenter/6-004-peering.png">
+<img width="900px" class="real-photo" src="../assets/datacenter/6-004-peering.png">
 
 In addition to peering locations, Google also operates many datacenters. Applications in datacenters can communicate with the rest of the Internet via the peering locations. The datacenters and peering locations are all connected through Google-managed routers and links in Google's wide area network.
 
-<img width="900px" class="real-photo" src="/assets/datacenter/6-005-datacenter-irl1.png">
+<img width="900px" class="real-photo" src="../assets/datacenter/6-005-datacenter-irl1.png">
 
 Datacenters and peering locations optimize for different performance goals, so they're often physically located in different places.
 
@@ -45,7 +45,7 @@ Peering locations care about being physically close to other companies and netwo
 
 By contrast, datacenters care less about being close to other companies, and instead prioritize requirements like physical space, power, and cooling. As a result, datacenters are often located in less-populated areas, sometimes with a nearby river (for cooling) or power station (datacenters might need hundreds of times more power than peering locations).
 
-<img width="800px" class="real-photo" src="/assets/datacenter/6-006-datacenter-irl2.png">
+<img width="800px" class="real-photo" src="../assets/datacenter/6-006-datacenter-irl2.png">
 
 ## Why is the Datacenter Different?
 
@@ -66,37 +66,37 @@ This one server probably doesn't have all the information to process your reques
 
 In order for the different servers to coordinate, the first server triggers many backend requests to collect all the information needed in your request. A single user request could trigger hundreds of backend requests (521 on average, per a 2013 Facebook paper) before the response can be sent back to the user. In general, there's significantly more backend traffic between servers, and the external traffic with the user is very small in comparison.
 
-<img width="900px" src="/assets/datacenter/6-007-nsew-traffic1.png">
+<img width="900px" src="../assets/datacenter/6-007-nsew-traffic1.png">
 
 Most modern applications are dominated by internal traffic between machines. For example, if you run a distributed program like mapreduce, the different servers need to communicate to each other to collectively solve your large query. Some applications might even have no user-facing network traffic at all. For example, Google might run periodic backups, which requires servers communicating, but produces no visible result for the end user.
 
 Connections that go outside the network (e.g. to end users or other datacenters) are described as **north-south** traffic. By contrast, connections between machines inside the network are described as **east-west** traffic. East-west traffic is several orders of magnitude larger than north-south traffic, and the volume of east-west traffic is increasing in recent years (e.g. with the growth of machine learning).
 
-<img width="300px" src="/assets/datacenter/6-008-nsew-traffic2.png">
+<img width="300px" src="../assets/datacenter/6-008-nsew-traffic2.png">
 
 
 ## Racks
 
 A datacenter fundamentally consists of many servers. The servers are organized in physical racks, where each rack has 40-48 rack units (slots), and each rack unit can fit 1-2 servers.
 
-<img width="500px" class="real-photo" src="/assets/datacenter/6-009-rack1.png">
+<img width="500px" class="real-photo" src="../assets/datacenter/6-009-rack1.png">
 
 We'd like all the servers in the datacenter to be able to communicate with each other, so we need to build a network to connect them all. What does this network look like? How do we efficiently install links and switches to meet our requirements?
 
 First, we can connect all the servers within a single rack. Each rack has a single switch called a **top-of-rack (TOR) switch**, and every server in the rack has a link (called an **access link** or **uplink**) connecting to that switch. The TOR is a relatively small router, with a single forwarding chip, and physical ports connecting to all the servers on the rack. Each server uplink typically has a capacity of around 100 Gbps.
 
-<img width="500px" class="real-photo" src="/assets/datacenter/6-010-rack2.png">
+<img width="500px" class="real-photo" src="../assets/datacenter/6-010-rack2.png">
 
 Next, we have to think about how to connect the racks together. Ideally, we'd like every server to talk to every other server at their full line rate (i.e. using the entire uplink bandwidth).
 
-<img width="500px" src="/assets/datacenter/6-011-rack3.png">
+<img width="500px" src="../assets/datacenter/6-011-rack3.png">
 
 
 ## Bisection Bandwidth
 
 Before thinking about how to connect racks, let's develop a metric for how connected a set of computers are.
 
-<img width="800px" src="/assets/datacenter/6-012-bisection1.png">
+<img width="800px" src="../assets/datacenter/6-012-bisection1.png">
 
 Intuitively, even though all three networks are fully connected, the left network is the most connected, the middle network is less connected, and the right network is the least connected. For example, the left and middle networks could support 1-4 and 3-6 simultaneously communicating at full line rate, while the right network cannot.
 
@@ -104,19 +104,19 @@ One way to argue that the left network is more connected is to say: We have to c
 
 **Bisection bandwidth** is a way to quantify how connected a network is. To compute bisection bandwidth, we compute the number of links we need to remove in order to partition the network into two disconnected halves of equal size. The bisection bandwidth is the sum of the bandwidths on the links that we cut.
 
-<img width="900px" src="/assets/datacenter/6-013-bisection2.png">
+<img width="900px" src="../assets/datacenter/6-013-bisection2.png">
 
 In the rightmost structure, we only need to remove one link to partition the network, so the bisection bandwidth is just that one link. By contrast, in the leftmost structure, we need to remove 9 links to partition the network, so the bisection bandwidth is the combined bandwidth of all 9 links.
 
 An equivalent way of defining bisection bandwidth is: We divide the network into two halves, and each node in one half wants to simultaneously send data to a corresponding node in the other half. Among all possible partitions of nodes, what is the minimum bandwidth that the nodes can collectively send at? Considering the worst case (minimum bandwidth) forces us to think about bottlenecks.
 
-<img width="900px" src="/assets/datacenter/6-014-bisection3.png">
+<img width="900px" src="../assets/datacenter/6-014-bisection3.png">
 
 The most-connected network has full bisection bandwidth. This means that there are no bottlenecks, and no matter how you assign nodes to partitions, all nodes in one partition can communicate simultaneously with all nodes in the other partition at full rate. If there are N nodes, and all N/2 nodes in the left partition are sending data at full rate R, then the full bisection bandwidth is N/2 times R.
 
 **Oversubscription** is a measure of how far from the full bisection bandwidth we are, or equivalently, how overloaded the bottleneck part of the network is. It's a ratio of the bisection bandwidth to the full bisection bandwidth (the bandwidth if all hosts sent at full rate).
 
-<img width="900px" src="/assets/datacenter/6-015-bisection4.png">
+<img width="900px" src="../assets/datacenter/6-015-bisection4.png">
 
 In the rightmost example, assuming all links are 1 Gbps, then the bisection bandwidth is 2 Gbps (to split the left four hosts with the right four hosts). The full bisection bandwidth, achieved when all four left hosts were simultaneously sending data, is 4 Gbps. Therefore, the ratio 2/4 tells us that the hosts can only send at 50% of their full rate. In other words, our network is 2x oversubscribed, because if the hosts all sent at full rate, the bottleneck links would be 2x overloaded (4 Gbps on 2 Gbps of links).
 
@@ -127,7 +127,7 @@ We've now defined bisection bandwidth, a measure of connectedness that's a funct
 
 One possible approach is to connect every rack to a giant cross-bar switch. All the racks on the left side can simultaneously send data at full rate into the switch, which forwards all that data to the right side at full rate. This would allow us to achieve full bisection bandwidth.
 
-<img width="500px" src="/assets/datacenter/6-016-topology1.png">
+<img width="500px" src="../assets/datacenter/6-016-topology1.png">
 
 What are some problems with this approach? The switch will need one physical port for every rack (potentially up to 2500 ports). We sometimes refer to the number of external ports as the **radix** of the switch, so this switch would need a large radix. Also, this switch would need to have enormous capacity (potentially petabits per second) to support all the racks. Unsurprisingly, this switch is impractical to build (even if we could, it would be prohibitively expensive).
 
@@ -137,13 +137,13 @@ Another problem is that this switch is a single point of failure, and the entire
 
 Another possible approach is to arrange switches in a tree topology. This can help us reduce the radix and the bandwidth of each link.
 
-<img width="500px" src="/assets/datacenter/6-017-topology2.png">
+<img width="500px" src="../assets/datacenter/6-017-topology2.png">
 
 What are some problems with this approach? The bisection bandwidth is lower. A single link is the bottleneck between the two halves of the tree.
 
 To increase bisection bandwidth, we could install higher-bandwidth links at higher layers.
 
-<img width="500px" src="/assets/datacenter/6-018-topology3.png">
+<img width="500px" src="../assets/datacenter/6-018-topology3.png">
 
 In this case, if the four lower links are 100 Gbps, and the two higher links are 300 Gbps, then we've removed the bottleneck and restored full bisection bandwidth.
 
@@ -154,11 +154,11 @@ This topology can be used, although we still haven't solved the problem where th
 
 So far, we've tried building networks using custom-built switches, potentially with very high bandwidth or radix. These switches are still expensive to build. Could we instead design a topology that gives high bisection bandwidth, using cheap commodity elements? In particular, we'd like to use a large number of cheap off-the-shelf switches, where all the switches have the same number of ports, each switch has a low number of ports, and all link speeds are the same.
 
-<img width="600px" src="/assets/datacenter/6-019-clos1.png">
+<img width="600px" src="../assets/datacenter/6-019-clos1.png">
 
 A **Clos network** achieves high bandwidth with commodity parts by introducing a huge number of paths between nodes in the network. Because there are so many links and paths through the network, we can achieve high bisection bandwidth by having each node send data along a different path.
 
-<img width="600px" src="/assets/datacenter/6-020-clos2.png">
+<img width="600px" src="../assets/datacenter/6-020-clos2.png">
 
 Unlike custom-built switches, where we scaled the network by building a bigger switch, we can scale Clos networks by simply adding more of the same switches. This solution is cost-effective and scalable!
 
@@ -166,7 +166,7 @@ Clos networks have been used in other applications too, and are named for their 
 
 In a classic Clos network, we'd have all the racks on the left send data to the racks on the right. In datacenters, racks can both send and receive data, so instead of having a separate layer of senders and recipients, we can have a single layer with all the racks (acting as either sender or recipient). Then, data travels along one of the many paths deeper into the network, and then back out to reach the recipient. This result is called a **folded Clos network**, because we've "folded" the sender and recipient layers into one.
 
-<img width="900px" src="/assets/datacenter/6-021-clos3.png">
+<img width="900px" src="../assets/datacenter/6-021-clos3.png">
 
 
 ## Fat-Tree Clos Topology
@@ -183,7 +183,7 @@ Within a pod, k/2 switches are in the upper aggregation layer, and the other k/2
 
 (Note: This topology is defined for even k, so that we can split up the switches evenly between the aggregation layer and edge layer).
 
-<img width="900px" src="/assets/datacenter/6-022-pods1.png">
+<img width="900px" src="../assets/datacenter/6-022-pods1.png">
 
 Each switch in the pod has k links. Half of the links (k/2) connect upwards, and the other half (k/2) connect downwards.
 
@@ -191,7 +191,7 @@ Consider a switch in the upper aggregation layer. Half (k/2) of its links connec
 
 Similarly, consider a switch in the lower edge layer. Half (k/2) of its links connect upwards to the k/2 switches in the aggregation layer. The other half (k/2) of its links connect downwards to k/2 hosts in this pod.
 
-<img width="900px" src="/assets/datacenter/6-023-pods2.png">
+<img width="900px" src="../assets/datacenter/6-023-pods2.png">
 
 
 Next, let's look at the core layer, which connects the pods together. Each core switch has k links, connecting to each of the k pods.
@@ -202,7 +202,7 @@ Each core layer switch has k links pointing downwards, so we need $$k^2/4$$ core
 
 We can also compute that there are $$(k/2)^2$$ hosts per pod in this topology. How did we derive this number? There are k/2 switches at the edge layer of each pod. Each edge-layer switch has k/2 downwards links to hosts, for a total of $$k/2 \times k/2 = (k/2)^2$$ hosts per pod. Note that each host is only connected to one edge-layer switch (a host is not connected to multiple switches in this topology). Since there are k pods in total, we can also deduce that there are $$(k/2)^2 \times k$$ hosts in total in this topology.
 
-<img width="900px" src="/assets/datacenter/6-024-pods3.png">
+<img width="900px" src="../assets/datacenter/6-024-pods3.png">
 
 
 k = 4, the smallest example, is unfortunately a little confusing because some of the numbers coincidentally end up the same (e.g. $$(k/2)^2 = k = 4$$). For a clearer example, we can look at k = 6.
@@ -219,13 +219,13 @@ At the core layer, we have $$(k/2)^2 = 9$$ core switches. Each switch has k = 6 
 
 In total, the core layer has $$(k/2)^2 \times k$$ links pointing downwards (number of core switches, times number of links per switch). The aggregation layer has $$k \times (k/2) \times (k/2)$$ links pointing upwards (number of pods, times number of aggregation switches per pod, times number of upwards links per aggregation switch). These two expressions match (and evaluate to 54 for k = 6), allowing the core layer to be fully-connected to the aggregation layer.
 
-<img width="900px" src="/assets/datacenter/6-025-pods4.png">
+<img width="900px" src="../assets/datacenter/6-025-pods4.png">
 
 This topology achieves full bisection bandwidth. If you split the pods into two halves (e.g. left half and right half), then every host in the left half has a dedicated path to a corresponding host in the right half. This allows all the hosts to pair up (one in left half, one in right half), and for each pair to communicate along a dedicated path, with no bottlenecks.
 
 Also, notice that this topology can be built out of commodity switches. Every switch has a radix of k links, regardless of which layer the switch is in. Also, every link can have the same bandwidth (e.g. 1 Gbps), and the scalability comes from the fact that we've created a dedicated path between any pair of hosts.
 
-<img width="900px" src="/assets/datacenter/6-026-pods5.png">
+<img width="900px" src="../assets/datacenter/6-026-pods5.png">
 
 
 Another way to see the full bisection bandwidth is to delete links until the network is partitioned into two halves (pods in the left half, and pods in the right half).
@@ -236,7 +236,7 @@ In order to fully isolate one side (e.g. fully isolate the left side), then for 
 
 There are $$(k/2)^2$$ hosts per pod, and k/2 pods in the left side, for a total of $$(k/2)^3$$ links in the left side. Similarly, there are $$(k/2)^3$$ links in the right side. If every host in the left side wanted to communicate with every host in the right side, then $$(k/2)^3$$ links' worth of bandwidth would be needed. Our bisection bandwidth matches this number, which means that full bisection bandwidth is achieved.
 
-<img width="900px" src="/assets/datacenter/6-027-pods6.png">
+<img width="900px" src="../assets/datacenter/6-027-pods6.png">
 
 How does this Clos fat-tree topology relate to the idea of racks and top-of-rack switches from earlier?
 
@@ -258,16 +258,16 @@ Finally, of the $$k^2 = 2304$$ ports, the remaining quarter ($$k^2/4 = 576$$) co
 
 In summary: Out of $$k^2$$ total ports, half of them are used to interconnect aggregation/edge switches in the same layer (connections happen entirely within the middle rack). Another quarter of them are used to connect edge switches to hosts in the pod (connections between the middle rack and the 12 surrounding racks with hosts). The last quarter of them are used to connect aggregation switches to the core layer (connections between the middle rack and other core-layer racks).
 
-<img width="600px" src="/assets/datacenter/6-028-pods7.png">
+<img width="600px" src="../assets/datacenter/6-028-pods7.png">
 
 
 ## Real-World Topologies
 
-<img width="900px" class="real-photo" src="/assets/datacenter/6-029-irl-topology1.png">
+<img width="900px" class="real-photo" src="../assets/datacenter/6-029-irl-topology1.png">
 
 In this example (2008), there are many different paths between any two end hosts.
 
-<img width="900px" class="real-photo" src="/assets/datacenter/6-030-irl-topology2.png">
+<img width="900px" class="real-photo" src="../assets/datacenter/6-030-irl-topology2.png">
 
 In this paper (2015), various topologies were explored.
 

@@ -13,7 +13,7 @@ layout: page-with-toc
 
 具体来说，我们会研究 Layer 2 的 forwarding 和 addressing。我们必须定义 packet 如何从本地 host 转发到 router。我们还会看到，同一个 local network 中的 host 如何在 Layer 2 交换消息，而完全不需要联系 router。Layer 2 中占主导地位的 protocol 是 Ethernet。
 
-<img width="400px" src="/assets/end-to-end/5-001-layer2.png">
+<img width="400px" src="../assets/end-to-end/5-001-layer2.png">
 
 
 ## 连接本地 Host
@@ -22,17 +22,17 @@ layout: page-with-toc
 
 现实中，一根 wire 可能被用来连接多台机器。在 local network 中，host 和 router 可以全都位于同一根 wire 上。我们甚至可以进一步抽象：在 Layer 2，router 实际上也只是和其他机器一样的一台机器（只不过它碰巧在更高层运行 routing protocol）。归根结底，wire 并不关心连接在上面的机器如何使用它们交换的数据。
 
-<img width="700px" src="/assets/end-to-end/5-002-linking-machines.png">
+<img width="700px" src="../assets/end-to-end/5-002-linking-machines.png">
 
 在 local network 中，连接计算机的最佳布线方式是什么？之前第一次介绍 routing 时，我们考虑过用 mesh topology 连接全世界每一对计算机。我们也考虑过用一根 wire 连接所有计算机。最终，我们认为对于全球网络，这两种方法都不实际，因此需要引入 router。
 
-<img width="800px" src="/assets/end-to-end/5-003-mesh-bus.png">
+<img width="800px" src="../assets/end-to-end/5-003-mesh-bus.png">
 
 我们可以在 local network 中重新考虑这些 topology。mesh topology 仍然非常不实际。如果一台新的 host 加入，我们就必须增加 wire，把它连接到其他每一台 host。不过，**bus** topology，也就是把所有计算机沿着同一根 wire 连接起来，在 local network 中相当常见且实用。
 
 单根 wire 的 bus topology 引入了 **shared media（共享介质）** 的概念。以前我们画 link 连接两台机器时，只有那两台计算机使用这条 link 通信。现在，从 A 到 C 的一个 packet，以及从 B 到 D 的一个 packet，可能同时出现在 wire 上，而这根 wire 上的电信号无法同时承载这两个 packet。
 
-<img width="600px" src="/assets/end-to-end/5-004-collision.png">
+<img width="600px" src="../assets/end-to-end/5-004-collision.png">
 
 类比一下，想象多人在一次群组通话中共享同一条电话线：任意两个人都可以互相说话，但不能有两组人同时对话，否则谁也听不清对方在说什么。
 
@@ -43,7 +43,7 @@ layout: page-with-toc
 
 在使用 shared medium 的网络中，不同 node 的 transmission 可能相互干扰或发生 collision。如果两台计算机同时尝试传输数据，它们的信号会重叠并相互干扰。recipient 可能无法解码信号，也无法判断信号是谁发送的。为了解决这个问题，我们需要一个 **multiple access protocol**，确保多台计算机可以共享 link 并在其上传输。
 
-<img width="700px" src="/assets/end-to-end/5-005-multiple-access-taxonomy.png">
+<img width="700px" src="../assets/end-to-end/5-005-multiple-access-taxonomy.png">
 
 一类可能的方法是给 link 上的每个 node 分配固定的一部分资源。我们可以考虑用两种方式划分资源。在 **frequency-division multiplexing** 中，我们给每台计算机分配不同的频率片段。（可以类比 AM/FM 广播或电视广播，它们把频率划分成不同 channel。）在 **time-division multiplexing** 中，我们把时间划分成固定 slot，并给每个连接的 node 分配一个 slot。
 
@@ -53,11 +53,11 @@ layout: page-with-toc
 
 在 **polling protocol** 中，一个中心 coordinator 决定每个连接的 node 何时可以发言。coordinator 逐个询问每个 node 是否有话要说。如果 node 说有，coordinator 就允许它发言一段时间。如果 node 说没有，coordinator 会立刻移动到下一个 node，这个 node 也不会浪费任何资源。Bluetooth 是现实中使用这一思想的 protocol。
 
-<img width="900px" src="/assets/end-to-end/5-006-polling.png">
+<img width="900px" src="../assets/end-to-end/5-006-polling.png">
 
 另一种让 node 轮流发言的方法是 **token passing**。我们不使用中心 coordinator，而是使用一个可以在 node 之间传递的虚拟 token，只有持有 token 的 node 才允许发言。如果某个 node 有话要说，它会在传输期间持有 token，然后把 token 传给下一个 node。如果某个 node 此刻没有话要说，它会立刻把 token 传给下一个 node。IBM Token Ring 和 FDDI 是现实中使用这一思想的 protocol 示例。
 
-<img width="900px" src="/assets/end-to-end/5-007-token.png">
+<img width="900px" src="../assets/end-to-end/5-007-token.png">
 
 这些基于轮次的方法有一个缺点：复杂。我们必须实现某种 node 间通信，而这可能变得很复杂。在 token passing 中，我们可能需要某个专用 frequency channel，让 node 能可靠地彼此传递 token。我们还可能需要处理一些复杂情况，例如两个 node 都认为自己拥有 token，从而导致 collision。在 polling protocol 中，我们需要指定一个中心 coordinator 与 node 通信，并实现 coordinator 与 node 对话的方式。在 Bluetooth 中，你的智能手机可以作为中心 coordinator 与辅助设备通信，但在其他网络中，谁来做 coordinator 可能并不明显。
 
@@ -74,7 +74,7 @@ random access protocol 的一个主要好处是简单。与基于轮次的方法
 
 注意，CSMA 不能帮助我们避免所有 collision。如果信号能瞬间传播到整根 wire 的每个位置，CSMA 中就不会有 collision。然而，propagation delay 会引入问题。假设 wire 一端的 node A 听到安静，于是开始传输。这个信号可能还没有传播到 wire 另一端的 node B。node B 也听到安静，于是也开始传输，从而导致 collision。
 
-<img width="500px" src="/assets/end-to-end/5-008-propagation.png">
+<img width="500px" src="../assets/end-to-end/5-008-propagation.png">
 
 这张 2D 图展示了 propagation delay 如何造成冲突。水平截面显示某个时刻的 wire，让我们看到信号在该时刻已经沿 wire 传播了多远。垂直截面显示 wire 上某个位置随时间的变化，让我们看到该位置何时看到 transmission 的第一个和最后一个 bit。H2 和 H4 在开始传输前都听到安静，但它们的信号仍然发生 collision。
 
@@ -99,7 +99,7 @@ binary exponential backoff 在两种场景下都运行良好。当只有少数 n
 
 这种非对称设计很适合 ALOHANet，因为 hub 可能比 remote node 有更多内容要发送。
 
-<img width="200px" src="/assets/end-to-end/5-009-alohanet.png">
+<img width="200px" src="../assets/end-to-end/5-009-alohanet.png">
 
 ALOHANet 是最早使用 random access protocol 处理 collision 的系统之一，而这种方法后来被用于 Ethernet。ALOHANet 使用了朴素而「粗鲁」的 random access 方法。后来的 protocol，比如 Ethernet，使用了更礼貌的 CSMA/CD：在传输前和传输中监听 collision，并在发生 collision 时指数退避。
 
@@ -132,7 +132,7 @@ Layer 2 packet 中可能有不同类型的目的地。在 **unicast** 中，pack
 
 Ethernet 中的数据 packet 称为 **frame**。许多 field 看起来和 IP header field 相似，不过也有一些差异。
 
-<img width="900px" src="/assets/end-to-end/5-010-ethernet-packet.png">
+<img width="900px" src="../assets/end-to-end/5-010-ethernet-packet.png">
 
 Ethernet packet 以 7-byte preamble 开始，用来表示 packet 的开始。这有助于在 wire 上传输信号时区分 packet。
 

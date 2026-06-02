@@ -32,19 +32,19 @@ DHCP 有四个步骤：
 
 1. 新 client 广播一条 **Discover** 消息，请求配置信息。
 
-    <img width="800px" src="/assets/end-to-end/5-050-dhcp1.png">
+    <img width="800px" src="../assets/end-to-end/5-050-dhcp1.png">
 
 2. 任何能够提供帮助的 **DHCP server** 都会向 client unicast 一个 **Offer**，其中包含 client 可以使用的配置（例如 IP 地址、gateway 地址、DNS 地址）。
 
-    <img width="800px" src="/assets/end-to-end/5-051-dhcp2.png">
+    <img width="800px" src="../assets/end-to-end/5-051-dhcp2.png">
 
 3. client 会广播一条 **Request** 消息，说明它接受了哪个 offer。这条消息要广播，是因为 client 可能收到多个 offer。通过告诉所有人它接受了哪个 offer，client 允许那些被拒绝的 offer 释放出来，供之后的 client 使用。
 
-    <img width="800px" src="/assets/end-to-end/5-052-dhcp3.png">
+    <img width="800px" src="../assets/end-to-end/5-052-dhcp3.png">
 
 4. server 发送 acknowledgement，确认这个 request 已被批准。
 
-    <img width="800px" src="/assets/end-to-end/5-053-dhcp4.png">
+    <img width="800px" src="../assets/end-to-end/5-053-dhcp4.png">
 
 
 ## DHCP Server
@@ -55,7 +55,7 @@ DHCP server 需要和 client 位于同一个本地网络中，因为这个 proto
 
 DHCP server 会在固定端口 UDP port 67 上监听来自新机器的请求。server 配置了所有必要信息：它们知道 gateway 和 DNS server，并且拥有一组可用 IP 地址，可以分配给新的用户。
 
-<img width="900px" src="/assets/end-to-end/5-054-dhcp-over-ip.png">
+<img width="900px" src="../assets/end-to-end/5-054-dhcp-over-ip.png">
 
 注意，IP 地址只是临时租给 host 的。租约只在有限时间内有效（例如数小时或数天的量级）。如果 host 想继续使用这个地址，就必须续租。如果某个 IP 地址当前已经租给了某台 host，DHCP server 就不能把同一个地址 offer 给其他 client。
 
@@ -79,7 +79,7 @@ DHCP 也存在于 IPv6 网络中。不过，由于 IPv6 地址更长，我们实
 
 技巧是利用 MAC 地址，因为我们知道它对每台机器都是唯一的。和之前一样，我们会请求本地网络信息，其中包括 gateway 地址、DNS 地址，以及尤其重要的本地网络 prefix。这个 prefix 通常是 64 bit 长。然后，我们把自己的 MAC 地址 bit 复制到 IPv6 地址的 host bit 中。我们可以相信没有其他人拥有这个 IPv6 地址：其他网络中的用户会有不同的 prefix，而这个网络中（或其他任何地方）也不会有人拥有相同的 MAC 地址 bit。
 
-<img width="900px" src="/assets/end-to-end/5-055-slaac.png">
+<img width="900px" src="../assets/end-to-end/5-055-slaac.png">
 
 为了获取本地网络信息，我们可以扩展 Neighbor Discovery protocol（IPv6 版本的 ARP）。Router Solicitation 消息允许用户广播本地网络信息请求，而 Router Advertisement 消息允许 router 回复这些信息。
 

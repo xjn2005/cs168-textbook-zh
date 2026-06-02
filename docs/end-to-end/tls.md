@@ -17,7 +17,7 @@ TCP 本身无法抵御网络攻击者。网络中的某个人（例如恶意 rou
 
 TLS 可以看作 Layer 4.5 protocol，位于 TCP 和 HTTP 这类 application protocol 之间。（我们使用 4.5 这样奇怪的数字，是因为已经过时的 Layer 5 和 Layer 6 与安全性无关。）TLS 依赖 TCP 的 bytestream 抽象，因此它不需要考虑单个 packet，也不需要考虑 packet loss 或重排序。TLS 向应用提供和 TCP 完全相同的 bytestream 抽象，只是这个 bytestream 现在能够抵御网络攻击者。这就是为什么 HTTP 和 HTTPS 在语义上是相同的 protocol。唯一的区别是 HTTPS 运行在 TLS-over-TCP 的安全 bytestream 之上，而 HTTP 运行在没有 TLS 的原始 TCP 之上。
 
-<img width="400px" src="/assets/end-to-end/5-072-layer45.png">
+<img width="400px" src="../assets/end-to-end/5-072-layer45.png">
 
 为了区分 HTTPS 和 HTTP，我们使用 Port 80 处理 HTTP connection，使用 Port 443 处理 HTTPS connection。server 可以通过把所有 Port 80 请求重定向到 Port 443，强制用户使用 HTTPS。
 
@@ -32,7 +32,7 @@ TLS 可以看作 Layer 4.5 protocol，位于 TCP 和 HTTP 这类 application pro
 
 接下来可以进行 TLS handshake：
 
-<img width="400px" src="/assets/end-to-end/5-073-tls-handshake.png">
+<img width="400px" src="../assets/end-to-end/5-073-tls-handshake.png">
 
 1. client 和 server 交换 hello。hello 包含随机数，确保每次 handshake 都会得到不同的 secret key。（如果我们每次都使用同一个 key，而攻击者入侵我们并学到了这个 key，那就很糟糕。）hello 还允许 client 和 server 协商具体要使用哪些 cryptographic protocol。client 的 hello 会列出 client 支持的所有 cryptographic scheme，server 的 hello 会选择其中一个使用。
 

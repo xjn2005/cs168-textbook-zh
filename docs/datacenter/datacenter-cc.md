@@ -41,7 +41,7 @@ ECN bit 在 wide-area Internet 中效果不太好，因为并不是所有 router
 
 为了衡量 DCTCP 的性能，我们可以测量 **flow completion time（FCT，flow 完成时间）**，它表示从第一个 byte 被发送到最后一个 byte 被接收之间的时间。作为 benchmark，理想 FCT 是使用一个全知 scheduler 时的完成时间，这个 scheduler 拥有整个网络和所有 connection 的全局知识。然后，scheduler 可以利用这些知识最优地调度 flow，并为 flow 分配 bandwidth。
 
-<img width="500px" src="/assets/datacenter/6-031-fct-chart1.png">
+<img width="500px" src="../assets/datacenter/6-031-fct-chart1.png">
 
 这张图展示了 normalized FCT，也就是实际 FCT 与理想 FCT 的比值。它告诉我们，相比理想 congestion control algorithm，我们差了多少。可以看到，标准 TCP congestion control 比理想情况差 3 倍；如果网络负载更高，最多会差 10 倍。相比之下，DCTCP 明显优于标准 TCP congestion control。DCTCP connection 完成得快得多，queuing delay 也更低。
 
@@ -59,7 +59,7 @@ ECN bit 在 wide-area Internet 中效果不太好，因为并不是所有 router
 
 如果再次看 FCT 图，我们会看到 pFabric 的性能甚至比 DCTCP 更好，并且非常接近理想情况。
 
-<img width="500px" src="/assets/datacenter/6-032-fct-chart2.png">
+<img width="500px" src="../assets/datacenter/6-032-fct-chart2.png">
 
 为什么 pFabric 效果这么好？Elephant 和 mouse 一起传输，并且所有人都以 full line rate 发送，这保证了可用 bandwidth 被充分利用。我们不必在 slow start 上浪费时间。同时，由于大型 elephant 中的大多数 packet priority 都很低，我们可以避免 collapse。Priority system 确保 mouse packet 仍然能以低 latency 穿过 queue。
 

@@ -21,19 +21,19 @@ IP multicast protocol 有时会在单个 domain 内使用（例如 datacenter ne
 
 我们如何定义一个 group？每个 multicast group 由一个 IP address 定义。从 224.0.0.0 到 239.255.255.255 的地址是 multicast address，所有人都知道这个 hard-coded range 中的地址是 multicast address。
 
-<img width="500px" src="/assets/beyond-client-server/7-005-multicast-addresses.png">
+<img width="500px" src="../assets/beyond-client-server/7-005-multicast-addresses.png">
 
 要加入一个 group，你会 announce 你想加入的 group 的 multicast address。至少一个 router 应该听到你的 message（例如你的 home router），然后 router 会彼此协调传播这条信息（例如使用 routing protocol）。最终，所有 router 都会知道你是这个 group 的一部分。
 
-<img width="900px" src="/assets/beyond-client-server/7-006-join-message.png">
+<img width="900px" src="../assets/beyond-client-server/7-006-join-message.png">
 
 类似地，你可以 announce 自己正在离开一个 group，并且同样使用 multicast address 标识你所指的是哪个 group。
 
-<img width="900px" src="/assets/beyond-client-server/7-007-leave-message.png">
+<img width="900px" src="../assets/beyond-client-server/7-007-leave-message.png">
 
 要向一个 group 发送 packet，你只需要把 multicast group address 填入 IP destination field。然后，router 会使用这个 group address，把 packet forward 给所有 group member。注意，作为 sender，你不需要关心谁属于这个 group，因为 router 会替你弄清楚。
 
-<img width="900px" src="/assets/beyond-client-server/7-008-multicast-forwarding.png">
+<img width="900px" src="../assets/beyond-client-server/7-008-multicast-forwarding.png">
 
 总结一下，IP multicast service model 为 end host 定义了三个 operation：你可以向一个 group 发送 packet（即使你自己不是这个 group 的一部分）。你可以 announce 自己正在加入一个 group。你可以 announce 自己正在离开一个 group。在这三个 operation 中，你的工作都只是发送 packet。Router 会处理这些 packet，彼此协调（例如运行 routing protocol），并相应地决定如何 route multicast packet。
 
@@ -51,11 +51,11 @@ IP multicast protocol 有时会在单个 domain 内使用（例如 datacenter ne
 
 1. Router 如何知道它直接连接的 host 属于哪些 group？我们会使用一个叫 IGMP 的 protocol 来解决这个问题。
 
-    <img width="900px" src="/assets/beyond-client-server/7-009-igmp-taxonomy.png">
+    <img width="900px" src="../assets/beyond-client-server/7-009-igmp-taxonomy.png">
 
 2. Router 如何通过 network forward packet，使其到达 destination group member？我们会看两个解决这个问题的 protocol：DVMRP 和 CBT。两个 protocol 实现相同目标，因此你可以在实现中任选一个（就像你可以选择 distance-vector 或 link-state，但不会两个都用）。
 
-    <img width="900px" src="/assets/beyond-client-server/7-010-dvmrp-cbt-taxonomy.png">
+    <img width="900px" src="../assets/beyond-client-server/7-010-dvmrp-cbt-taxonomy.png">
 
 ## IGMP：Directly-Connected Host
 
@@ -67,7 +67,7 @@ IP multicast protocol 有时会在单个 domain 内使用（例如 datacenter ne
 
 **Reports：** 作为响应，host 会把 Report 发回 router。Report 回答这个问题：这些是我所属的 group。Host 也可以发送 unsolicited Report（也就是不等待 Query）。
 
-<img width="900px" src="/assets/beyond-client-server/7-011-igmp-queries-reports.png">
+<img width="900px" src="../assets/beyond-client-server/7-011-igmp-queries-reports.png">
 
 通过周期性交换 Query 和 Report，router 可以掌握最新的 group membership。如果 router 很久没有收到某个 membership 的 Report，router 会假设这个 membership 已经过期并将其 invalidated。
 

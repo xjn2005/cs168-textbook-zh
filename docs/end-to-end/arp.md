@@ -11,7 +11,7 @@ layout: page-with-toc
 
 回忆一下，packet 沿协议栈向下移动到更低层时，会被不断包上一层新的 header。要发送一个 IP packet，我们首先在 Layer 3 填入它的目的 IP。然后，我们把这个 packet 交给 Layer 2，在那里必须添加 MAC 地址，才能沿着 link 发送 packet。我们应该添加哪个 MAC 地址？
 
-<img width="800px" src="/assets/end-to-end/5-041-arp-blank-mac.png">
+<img width="800px" src="../assets/end-to-end/5-041-arp-blank-mac.png">
 
 首先，我们需要检查目的 IP 是本地网络中的某台机器，还是另一个本地网络中的机器。为了判断这一点，sender 的 forwarding table 中会有一条 entry，指出本地 IP 地址的范围，有时也称为我们的 **subnet（子网）**。例如，这条 entry 可能写着 192.0.2.0/24 是 direct，这意味着 192.0.2.0 到 192.0.2.255 之间的所有地址都在同一个本地网络中。表中还会有一条 default route，表示其他所有非本地目的地都应该转发给 router。
 
@@ -36,23 +36,23 @@ layout: page-with-toc
 
 第 1 步：
 
-<img width="900px" src="/assets/end-to-end/5-042-arp1.png">
+<img width="900px" src="../assets/end-to-end/5-042-arp1.png">
 
 第 2 步：
 
-<img width="900px" src="/assets/end-to-end/5-043-arp2.png">
+<img width="900px" src="../assets/end-to-end/5-043-arp2.png">
 
 第 3 步：
 
-<img width="900px" src="/assets/end-to-end/5-044-arp3.png">
+<img width="900px" src="../assets/end-to-end/5-044-arp3.png">
 
 第 4 步：
 
-<img width="900px" src="/assets/end-to-end/5-045-arp4.png">
+<img width="900px" src="../assets/end-to-end/5-045-arp4.png">
 
 注意，ARP 直接运行在 Layer 2 上，因此所有 packet 都通过 Ethernet 发送和接收，而不是通过 IP。
 
-<img width="900px" src="/assets/end-to-end/5-046-arp5.png">
+<img width="900px" src="../assets/end-to-end/5-046-arp5.png">
 
 
 ## 连接 ARP 和 Forwarding Table
@@ -61,7 +61,7 @@ layout: page-with-toc
 
 实际上，router 的 forwarding table 会包含一条单独的 entry，把整个 subnet 的 IP 地址范围映射为 direct。如果 router 收到一个目的地在这个本地范围内的 packet，router 就会运行 ARP 来找到对应的 MAC 地址，并使用 Layer 2 把 packet 发送给 link 上正确的 host。
 
-<img width="600px" src="/assets/end-to-end/5-047-direct-route.png">
+<img width="600px" src="../assets/end-to-end/5-047-direct-route.png">
 
 这也能帮助我们处理同一条 link 上连接了多台 host 的情况。在概念图中，我们会说 Host A 直接连接在 Port 1 上。但那条 link 上可能有多台 host，因此通过 ARP，我们可以创建一个 Layer 2 packet，只把它 unicast 给 Host A，而不是发给 link 上的其他计算机。
 
@@ -71,7 +71,7 @@ layout: page-with-toc
 
 注意，当 packet 跨 hop 转发时，Layer 2 的目的地址会变成 next hop 的 MAC 地址，这样 packet 才能跨 link 前进。但是，Layer 3 的目的地址在每个 hop 上都保持不变。
 
-<img width="700px" src="/assets/end-to-end/5-048-arp-filled-in-mac.png">
+<img width="700px" src="../assets/end-to-end/5-048-arp-filled-in-mac.png">
 
 
 ## IPv6 中的 Neighbor Discovery
@@ -82,6 +82,6 @@ neighbor discovery 不会广播 IP-to-MAC 转换请求，而是把请求 multica
 
 如果我想知道 IPv6 地址以 12:3456 结尾的用户对应的 MAC 地址，就可以把这些 IPv6 bit 填入 group MAC address，得到 33:33:FF:12:34:56，并且我知道拥有该 IP 地址的用户一定在监听这个 group MAC address。
 
-<img width="900px" src="/assets/end-to-end/5-049-neighbor-discovery.png">
+<img width="900px" src="../assets/end-to-end/5-049-neighbor-discovery.png">
 
 补充一些术语：在 neighbor discovery protocol 中，请求 mapping 的消息称为 Neighbor Solicitation，包含 mapping 的回复称为 Neighbor Advertisement。
