@@ -1,163 +1,230 @@
-﻿---
+---
 title: Addressing
 parent: Routing
 nav_order: 6
 layout: page-with-toc
 ---
 
-# Addressing锛堝鍧€锛?
-## 鎵╁睍 Routing
+# Addressing（寻址）
 
-鍒扮洰鍓嶄负姝紝鎴戜滑鐨?forwarding table 涓烘瘡涓?destination 淇濆瓨涓€鏉?entry銆傝繖鏃犳硶鎵╁睍鍒版暣涓?Internet銆?
-濡傛灉鎴戜滑鍦ㄦ暣涓?Internet 涓婅繍琛?distance-vector锛屽氨蹇呴』涓?Internet 涓婄殑姣忎釜 host 鍙戦€佷竴鏉?announcement銆傚鏋滄垜浠湪鏁翠釜 Internet 涓婅繍琛?link-state锛屾瘡涓?router 閮藉繀椤荤煡閬撳畬鏁寸殑 Internet network graph銆傛棤璁哄摢绉嶆儏鍐碉紝鍙鏈変换浣?host 鍔犲叆鎴栫寮€ Internet锛屾垜浠兘蹇呴』閲嶆柊璁＄畻锛屼娇 network converge 鍒版柊鐨?routing state銆?
-璁?routing 鑳藉鎵╁睍鐨勫叧閿紝鍦ㄤ簬鎴戜滑濡備綍涓?host 缂栧潃銆傚埌鐩墠涓烘锛屾垜浠竴鐩寸敤鏌愪釜鍚嶅瓧绉板懠姣忎釜 host 鍜?router锛堜緥濡?R1銆丷2銆丄銆丅锛夛紝浣嗗湪瀹炶返涓紝鎴戜滑浼氫娇鐢ㄦ洿鑱槑鐨?addressing scheme銆?
+## 扩展路由
+
+到目前为止，转发表（forwarding table）会为每个目的地（destination）保存一条表项（entry）。这种做法无法扩展到整个 Internet。
+
+如果我们在整个 Internet 上运行 distance-vector，就必须为 Internet 上的每台主机发送一则通告（announcement）。如果我们在整个 Internet 上运行 link-state，每台路由器都必须知道完整的 Internet 网络图（network graph）。无论哪种情况，只要任一主机加入或离开 Internet，我们都必须重新计算，以收敛到新的路由状态（routing state）。
+
+要让路由具备可扩展性，关键在于如何为主机编址。到目前为止，我们一直用某个名称称呼每台主机和路由器（例如 R1、R2、A、B）；但在实践中，我们会使用更智能的编址方案（addressing scheme）。
+
 <img width="750px" src="../assets/routing/2-099-scaling-routing.png">
 
+## IP 寻址
 
-## IP Addressing
+回忆我们的邮政系统类比：不同的场景采用不同的编址方案。邮递员使用类似 2551 Hearst Ave. 的街道地址；楼内的秘书使用类似 413 Soda Hall 的房间号。地址通常以某种结构化方式分配。例如，三楼所有房间号都以数字 3 开头，四楼所有房间号都以数字 4 开头。
 
-鍥炲繂閭斂绯荤粺绫绘瘮锛氫笉鍚屽満鏅細浣跨敤涓嶅悓鐨勫湴鍧€鏂规銆傞偖閫掑憳浣跨敤绫讳技 2551 Hearst Ave. 鐨勮閬撳湴鍧€锛涙ゼ閲岀殑绉樹功浣跨敤绫讳技 413 Soda Hall 鐨勬埧闂村彿銆傚湴鍧€閫氬父浼氫互鏌愮缁撴瀯鍖栨柟寮忓垎閰嶃€備緥濡傦紝涓夋ゼ鐨勬埧闂村彿閮戒互鏁板瓧 3 寮€澶达紝鍥涙ゼ鐨勬埧闂村彿閮戒互鏁板瓧 4 寮€澶淬€?
-鍜岄偖鏀跨郴缁熶竴鏍凤紝Internet 鍦ㄦ瘡涓€灞備娇鐢ㄤ笉鍚岀殑 addressing scheme銆傛湰鑺傚叧娉?IP address锛屽畠鍙互鐢ㄤ簬 Layer 3 鐨?routing銆?
-Network 涓婄殑姣忎釜 host锛堜緥濡備綘鐨勭數鑴戙€丟oogle 鐨勬湇鍔″櫒锛夐兘浼氳鍒嗛厤涓€涓?IP address銆傚湪鏈妭涓紝浣犲彲浠ュ亣璁炬瘡涓?host 閮芥湁鍞竴鐨?IP address銆?
-**IP address锛圛P 鍦板潃锛?* 鏄竴涓敮涓€鏍囪瘑 host 鐨勬暟瀛椼€傚拰閭斂绯荤粺涓€鏍凤紝杩欎釜鏁板瓧鐨勯€夋嫨浼氬寘鍚竴浜涘叧浜?host 浣嶇疆鐨勪笂涓嬫枃淇℃伅銆?
-娉ㄦ剰锛孖P address 涓嶄竴瀹氭槸闈欐€佺殑銆傚湪绫绘瘮涓紝濡傛灉浣犳惉鍒板彟涓€鏍嬫埧瀛愶紝浣犵殑鍦板潃浼氭敼鍙樸€傜被浼煎湴锛屽鏋滀綘鐨勭數鑴戠Щ鍔ㄥ埌鍙︿竴涓綅缃紝瀹冨姞鍏?network 鏃跺彲鑳戒細琚垎閰嶄竴涓笉鍚岀殑 IP address锛堣€屾棫 IP address 鏈€缁堜細 expire锛夈€?
-IP address 鐨勯暱搴﹀彇鍐充簬浣跨敤鐨?IP 鐗堟湰銆侷Pv4 address 鏄?32 bits锛孖Pv6 address 鏄?128 bits銆備袱涓増鏈殑 routing 姒傚康绫讳技锛屼絾鍙鍙兘锛屾垜浠細浣跨敤 IPv4锛屽洜涓鸿緝鐭殑鍦板潃鏇村鏄撻槄璇汇€?
+与邮政系统一样，Internet 在每一层使用不同的编址方案。本节聚焦于 IP 地址（IP address），它可用于 Layer 3 的路由。
 
-## Hierarchical Addressing
+网络上的每台主机（例如你的计算机、Google 的服务器）都会被分配一个 IP 地址。本节中，你可以假设每台主机都有唯一的 IP 地址。
 
-鍥炲繂涓€涓嬶紝Internet 鏄綉缁滅殑缃戠粶銆備笘鐣屼笂鏈夎澶?local network锛屾垜浠€氳繃鍦?local network 涔嬮棿娣诲姞 link 鏉ュ舰鎴愭洿澶х殑 Internet銆傝繖缁欎簡鎴戜滑涓€绉嶈嚜鐒剁殑 hierarchy锛屽彲浠ョ敤鏉ョ粍缁?addressing scheme銆?
+**IP 地址（IP address）**是唯一标识一台主机的数字。与邮政系统一样，这个数字的选择会包含一些关于主机所在位置的上下文信息。
+
+注意，IP 地址不一定是静态的。在这个类比中，如果你搬到另一所房子，你的地址就会改变。类似地，如果你的计算机移动到另一个位置，它加入网络时可能会被分配一个不同的 IP 地址（而旧 IP 地址最终会过期）。
+
+IP 地址的长度取决于所使用的 IP 版本。IPv4 地址为 32 bits，IPv6 地址为 128 bits。两个版本的路由概念相似；但只要可能，我们会使用 IPv4，因为较短的地址更容易阅读。
+
+## 分层寻址
+
+回忆一下，Internet 是网络的网络。世界上有许多本地网络（local network），我们通过在本地网络之间添加链路（link）来形成更广泛的 Internet。这为我们提供了一种天然的层级结构（hierarchy），可用于组织编址方案。
+
 <img width="900px" src="../assets/routing/2-100-address-intuition1.png">
 
-涓嬮潰鏄竴寮犵洿瑙傜殑 addressing 鍥俱€傛垜浠彲浠ョ粰姣忎釜 network 鍒嗛厤涓€涓暟瀛椼€傜劧鍚庯紝鍦?network 3 鍐呴儴锛屾垜浠彲浠ュ垎閰?host number 3.1銆?.2銆?.3 绛夛紱鍏朵粬 network 涓殑 host 涔熺被浼笺€?
+下图直观地展示了寻址。我们可以为每个网络分配一个数字；然后在网络 3 内部，可以为主机分配 3.1、3.2、3.3 等主机编号，其他网络中的主机也以类似方式编号。
+
 <img width="900px" src="../assets/routing/2-101-address-intuition2.png">
 
-鐜板湪锛岃€冭檻 router R9 涓殑 forwarding table銆備互鍓嶏紝鎴戜滑浼氫负 network 1 涓殑姣忎釜 host 閮戒繚瀛樹竴鏉?entry锛岃€屼笖瀹冧滑鐨?next hop 閮芥槸 R6銆傛湁浜?hierarchical addressing锛屾垜浠彲浠ユ敼鐢ㄤ竴鏉?entry 琛ㄧず鏁翠釜 local network锛氭墍鏈?1.* address锛堝叾涓?* 琛ㄧず浠绘剰鏁板瓧锛夌殑 next hop 閮芥槸 R6銆傛垜浠篃鍙互璇存墍鏈?2.* address 鐨?next hop 閮芥槸 R8銆?
-杩欑浣跨敤 wildcard match 鏉ユ眹鎬?route 鐨?hierarchical model锛屼細璁?forwarding table 鏇村皬銆?
-姝ゅ锛岃繖绉嶆ā鍨嬭繕浼氳 table 鏇寸ǔ瀹氥€?
+现在，考虑路由器 R9 中的转发表。此前，我们会为网络 1 中的每台主机各保存一条表项，且它们的下一跳（next hop）都为 R6。采用分层寻址后，我们可以只用一条表项表示整个本地网络：所有 `1.*` 地址（其中 `*` 表示任意数字）的下一跳都是 R6。类似地，也可以说所有 `2.*` 地址的下一跳都是 R8。
+
+这种使用通配符匹配（wildcard match）来汇总路由的分层模型，会使转发表更小。
+
+此外，这种模型也会使转发表更稳定。
+
 <img width="900px" src="../assets/routing/2-102-address-intuition3.png">
 
-濡傛灉 network 1 鍐呴儴鐨?topology 鏀瑰彉锛屾垜浠笉闇€瑕佹洿鏂?R9 鐨?forwarding table锛堜篃涓嶉渶瑕佹洿鏂板叾浠?network 涓殑 table锛夈€傚疄璺典腑锛宭ocal network 鍐呴儴鐨勫彉鍖栵紙渚嬪鏈夋柊 host 鍔犲叆 network锛夊彂鐢熷緱姣?network 涔嬮棿鐨勫彉鍖栵紙渚嬪鏂伴摵璁惧湴涓嬬數缂嗭級棰戠箒寰楀锛屾墍浠?local change 鍙奖鍝?local table 鏄竴浠跺ソ浜嬨€?
-鏇翠竴鑸湴璇达紝鎴戜滑鐨?address 鏈変袱涓儴鍒嗭細network ID 鍜?host ID銆傝繖璁?inter-domain routing protocol 鍙互涓撴敞浜?network ID锛岀敤鏉ュ鎵?network 涔嬮棿鐨?route锛涗篃璁?intra-domain routing protocol 鍙互涓撴敞浜?host ID锛岀敤鏉ュ鎵?network 鍐呴儴鐨?route銆傞殢鐫€ network 鍙樺寲锛岃繖涔熻 routing protocol 鏇寸ǔ瀹氥€侷nter-domain protocol 涓嶅叧蹇?network 鍐呴儴鐨勫彉鍖栵紝intra-domain protocol 涔熶笉鍏冲績鍏朵粬 network 涓殑鍙樺寲銆?
+如果网络 1 内部的拓扑发生变化，我们不需要更新 R9 的转发表（也不需要更新其他网络中的任何转发表）。在实践中，本地网络内部的变化（例如新主机加入网络）远比网络之间的变化（例如新铺设地下电缆）频繁。因此，局部变化只影响局部转发表是一件好事。
+
+更一般地说，地址由两部分组成：网络 ID（network ID）和主机 ID（host ID）。这使得域间路由协议（inter-domain routing protocol）可以专注于网络 ID，以寻找网络之间的路由；域内路由协议（intra-domain routing protocol）则可以专注于主机 ID，以寻找网络内部的路由。随着网络发生变化，这也会使路由协议更稳定：域间协议不关心网络内部的变化，域内协议也不关心其他网络中的变化。
+
 <img width="900px" src="../assets/routing/2-103-address-intuition4.png">
 
-娉ㄦ剰锛孯9 鐨?forwarding table 浠嶇劧闇€瑕佷负鑷繁鎵€鍦?network锛堜篃灏辨槸 network 2锛夊唴閮ㄧ殑姣忎釜鍗曠嫭 host 淇濆瓨 entry銆?
-绫讳技鍦帮紝R4 鏄竴涓病鏈夎繛鎺ュ埌鍏朵粬 network 鐨?internal router锛屽畠鏃㈤渶瑕?network 3 鍐呴儴姣忎釜鍗曠嫭 host 鐨?entry锛屼篃闇€瑕佸叾浠?network 鐨?aggregated entry锛堜緥濡?2.* 鐨?next hop 鏄?R9锛夈€侳orwarding table 鐨勮妯″彇鍐充簬鍚屼竴涓?network 鍐呴儴 host 鐨勬暟閲忥紝鍔犱笂澶栭儴 network 鐨勬暟閲忋€?
+注意，R9 的转发表仍需要为其所在网络（即网络 2）内的每台主机保存单独的表项。
 
-## Default Route
+类似地，R4 是一台不连接其他网络的内部路由器（internal router），它既需要网络 3 内每台主机的表项，也需要其他网络的聚合表项（aggregated entry）（例如 `2.*` 的下一跳为 R9）。转发表的规模取决于同一网络内的内部主机数量，加上外部网络数量。
 
-鐜板湪鎴戜滑鐭ラ亾锛宔ntry 鍙互琛ㄧず鏁翠釜 address range锛岃€屼笉涓€瀹氭€绘槸琛ㄧず鍗曚釜 address銆傛垜浠彲浠ヨ繘涓€姝ユ墿灞曡繖涓兂娉曟潵鎻愬崌鎵╁睍鎬с€?
+## 默认路由
+
+现在我们知道，一条表项可以表示整个地址范围，而不必总是表示单个地址。我们可以进一步扩展这个想法，以提高可扩展性。
+
 <img width="900px" src="../assets/routing/2-104-aggregation1.png">
 
-鑰冭檻 R4銆傚畠涓烘瘡涓?external network锛?.\*銆?.\* 鍜?4.\*锛夐兘鏈変竴鏉?entry锛岃€屼笖瀹冧滑鐨?next hop 閮芥槸 R9銆傛垜浠彲浠ユ妸鎵€鏈?external network 鑱氬悎鎴愪竴鏉?entry銆傛垜浠粛鐒朵細涓烘瘡涓?internal host锛?.1銆?.2 绛夛級淇濈暀 entry锛屼絾鏈€鍚庡啀鍐欎竴鏉¤鍒欙細瀵逛簬鎵€鏈変笉鍦?forwarding table 涓殑鍏朵粬 host锛宯ext hop 鏄?R9銆?
+考虑 R4。它为每个外部网络（`1.*`、`3.*` 和 `4.*`）各有一条表项，且下一跳都为 R9。我们可以将所有外部网络聚合为一条表项。我们仍会为每台内部主机（`2.1`、`2.2` 等）保留表项，但在最后加上一条规则：对于所有未列在转发表中的其他主机，下一跳为 R9。
+
 <img width="900px" src="../assets/routing/2-105-aggregation2.png">
 
-鍦?R2 涓婏紝鎴戜滑鍙互浣跨敤鏇存縺杩涚殑 aggregation銆傚悓鏍凤紝鎵€鏈?external network 鐨?next hop 閮芥槸 R3銆備絾鏄紝2.1銆?.2銆?.3銆?.6 鍜?2.7 鐨?next hop 涔熸槸 R3銆傚洜姝わ紝forwarding table 鍙渶瑕佷负 2.4 鍜?2.5 淇濈暀 static entry銆傜劧鍚庢垜浠彲浠ヨ锛屽浜庢墍鏈変笉鍦?forwarding table 涓殑鍏朵粬 host锛堝寘鎷竴浜?internal host 鍜屼竴浜?external host锛夛紝next hop 閮芥槸 R3銆?
-涓轰簡琛ㄧず table 涓病鏈夊垪鍑虹殑鎵€鏈?host锛屾垜浠彲浠ヤ娇鐢?wildcard *.*锛屽畠浼氬尮閰嶆墍鏈夊唴瀹广€傚綋鍚戠粰瀹?destination 杞彂鏃讹紝router 浼氬厛妫€鏌?specific host锛堜緥濡?3.1锛夋垨 range锛堜緥濡?2.*锛夋槸鍚﹀尮閰嶃€傚鏋?router 鎵句笉鍒颁换浣曞尮閰嶉」锛屾渶缁堜細鍖归厤 *.* wildcard銆傝繖绉颁负 **default route锛堥粯璁よ矾鐢憋級**銆?
-澶у鏁?host 鍙湁涓€鏉?hard-coded default route銆備緥濡傦紝host 2.4 鐨?forwarding table 鍙湁涓€鏉?entry锛岃〃绀烘墍鏈夊唴瀹归兘鍙戦€佺粰 R2銆傚疄璺典腑锛屼綘鐨勫鐢ㄧ數鑴戜篃鍙湁涓€鏉?entry锛岃〃绀烘墍鏈夊唴瀹归兘鍙戦€佺粰瀹堕噷鐨?router銆傝繖灏辨槸 host 涓嶉渶瑕佸弬涓?routing protocol 鐨勫師鍥犮€?
+在 R2 上，我们可以使用更激进的聚合。与前面一样，所有外部网络的下一跳都是 R3；但 `2.1`、`2.2`、`2.3`、`2.6` 和 `2.7` 的下一跳也都是 R3。因此，转发表只需为 `2.4` 和 `2.5` 保留静态表项。然后我们可以规定：对于所有未列在转发表中的其他主机（包括一些内部主机和一些外部主机），下一跳均为 R3。
 
-## 鍒嗛厤 Hierarchical IP Address锛氭棭鏈?Internet
+为了表示未列在转发表中的所有主机，我们可以使用匹配一切的通配符 `*.*`。向给定目的地转发时，路由器会先检查特定主机（例如 `3.1`）或范围（例如 `2.*`）是否匹配。如果路由器找不到任何匹配项，最终就会匹配 `*.*` 通配符。这称为**默认路由（default route）**。
 
-涓轰簡鑾峰緱鏇村彲鎵╁睍鐨?routing锛屾垜浠渶瑕佷互鏌愮 hierarchical way 鍒嗛厤 address銆傝繖浜?address 闇€瑕佸寘鍚竴浜涗綅缃俊鎭紙渚嬪浣嶇疆鐩歌繎鐨?host 闇€瑕佸叡浜?address 鐨勪竴閮ㄥ垎锛夈€?
-鍦ㄦ棭鏈?Internet 涓紝IPv4 address 鍜屽墠闈㈢殑鐩磋鐗堟湰涓€鏍凤紝鏈変竴涓?8-bit network ID 鍜屼竴涓?24-bit host ID銆?
+大多数主机只有一条硬编码的默认路由。例如，主机 `2.4` 的转发表只有一条表项，即将所有内容发送给 R2。在实践中，你的家用计算机也只有一条表项，即将所有内容发送给家中的路由器。这就是主机不需要参与路由协议的原因。
+
+## 分配分层 IP 地址：早期 Internet
+
+为了获得更具可扩展性的路由，我们需要以某种分层方式分配地址。这些地址需要包含一些关于其位置的信息（例如，位置相近的主机需要共享地址中的某一部分）。
+
+在早期 Internet 中，IPv4 地址与前面的直观版本一样，包含一个 8-bit 的网络 ID 和一个 24-bit 的主机 ID。
+
 <img width="800px" src="../assets/routing/2-106-cidr1.png">
 
-渚嬪锛孉T&T 鐨?network ID 鏄?12锛孉pple 鐨?network ID 鏄?17锛岃€岀編鍥藉浗闃查儴鏈?13 涓笉鍚岀殑 network ID銆?
-8-bit network ID 鎰忓懗鐫€鎴戜滑鍙兘鍒嗛厤 256 涓笉鍚岀殑 network ID锛屼絾鐜板疄涓紝鍙兘杩愯鑷繁 local network 鐨勭粍缁囪繙杩滆秴杩?256 涓€傚彟澶栵紝24-bit host ID 鎰忓懗鐫€姣忎釜 network 閮藉緱鍒?2\^24 = 16,777,216 涓?address銆備竴涓皬 network锛堜緥濡傚彧鏈?10 鍚嶅憳宸ョ殑鍏徃锛夊ぇ姒備笉闇€瑕?1600 涓囦釜 address銆傞殢鐫€ Internet 鍙樺ぇ锛屾垜浠渶瑕佷竴绉嶆柊鐨?addressing 鏂规硶銆?
+例如，AT&T 的网络 ID 是 12，Apple 的网络 ID 是 17，而美国国防部有 13 个不同的网络 ID。
 
-## 鍒嗛厤 Hierarchical IP Address锛欳lassful Addressing
+8-bit 的网络 ID 意味着我们只能分配 256 个不同的网络 ID；但现实中，可能运营自己本地网络的组织远多于 256 个。此外，24-bit 的主机 ID 意味着每个网络会获得 $2^24 = 16,777,216$ 个地址。一个小型网络（例如只有 10 名员工的公司）大概不需要 1,600 万个地址。随着 Internet 规模扩大，我们需要一种新的编址方法。
 
-绗竴娆′慨澶嶅皾璇曟槸 **classful addressing锛堝垎绫诲鍧€锛?*锛屽畠鏍规嵁闇€姹傚垎閰嶄笉鍚屽ぇ灏忕殑 network銆傚湪杩欑鏂规硶涓紝鏈?3 绫?address锛屾瘡绫诲垎閰嶇粰 network ID 鍜?host ID 鐨?bit 鏁颁笉鍚屻€傛渶鍓嶉潰鐨?1-3 bits 鏍囪瘑姝ｅ湪浣跨敤鍝竴绫汇€?
+## 分配分层 IP 地址：分类寻址
+
+第一次修复尝试是**分类寻址（classful addressing）**，它根据需求分配不同大小的网络。在这种方法中，地址分为 3 类，每一类分配给网络 ID 和主机 ID 的 bit 数不同。最前面的 1–3 个 bit 标识当前使用的是哪一类。
+
 <img width="900px" src="../assets/routing/2-107-cidr2.png">
 
-Class A address 浠?leading bit 0 寮€澶淬€傛帴涓嬫潵鐨?7 bits 鏄?network ID锛?28 涓?network锛夛紝鍐嶆帴涓嬫潵鐨?24 bits 鏄?host ID锛?600 涓囦釜 host锛夈€?
-Class B address 浠?leading bits 10 寮€澶淬€傛帴涓嬫潵鐨?14 bits 鏄?network ID锛?6000 涓?network锛夛紝鍐嶆帴涓嬫潵鐨?16 bits 鏄?host ID锛?5000 涓?host锛夈€?
-Class C address 浠?leading bits 110 寮€澶淬€傛帴涓嬫潵鐨?21 bits 鏄?network ID锛?00 涓囦釜 network锛夛紝鍐嶆帴涓嬫潵鐨?8 bits 鏄?host ID锛?56 涓?host锛夈€?
-鍦ㄨ繖绉嶆柟娉曚腑锛屾垜浠幇鍦ㄥ彲浠ユ嫢鏈?200 涓?+ 16000 + 128 涓笉鍚岀殑 local network銆傛嫢鏈夋洿澶?host 鐨勫ぇ鍨嬬粍缁囧彲浠ヨ幏寰?Class A network锛岃緝灏忕粍缁囧彲浠ヨ幏寰?Class B 鎴?Class C network銆傚拰涔嬪墠涓€鏍凤紝鍦ㄥ崟涓?network 鍐呴儴锛宭eading class bit(s) 鍜?network ID bits 閮界浉鍚岋紝姣忎釜 host 鑾峰緱涓嶅悓鐨?host ID銆?
-Classful addressing 鐨勪竴涓富瑕侀棶棰樻槸姣忎竴绫荤殑澶у皬銆侰lass A锛?600 涓囦釜 host锛夊澶у鏁扮粍缁囨潵璇村お澶э紝鑰?Class C锛?56 涓?host锛夊澶у鏁扮粍缁囨潵璇村お灏忋€傜粨鏋滄槸锛屽ぇ澶氭暟 network 閮介渶瑕佽惤鍦?Class B銆?
-涓嶅垢鐨勬槸锛孋lass B network ID 鍙湁 16000 涓€傚埌 1994 骞达紝鎴戜滑宸茬粡蹇敤瀹?Class B network 浜嗐€傚洜姝わ紝鍙堥渶瑕佷竴绉嶆柊鐨?addressing 鏂规硶銆?
-娉ㄦ剰锛氬湪鐜颁唬 Internet 涓紝classful addressing 宸茬粡杩囨椂銆?
-娉ㄦ剰锛氫弗鏍兼潵璇达紝姣忎釜 network 涓殑 host 鏁伴噺瑕佸皯 2 涓紝鍥犱负鍏?0 address 鍜屽叏 1 address 琚繚鐣欑敤浜庣壒娈婄洰鐨勩€備緥濡傦紝鍦?Class C 涓紝姣忎釜 network 瀹為檯涓婃湁 254 涓?host锛岃€屼笉鏄?256 涓€?
+Class A 地址以最高位（leading bit）`0` 开头。接下来的 7 bits 是网络 ID（128 个网络），再接下来的 24 bits 是主机 ID（1,600 万台主机）。
 
-## 鍒嗛厤 Hierarchical IP Address锛欳IDR
+Class B 地址以最高位 `10` 开头。接下来的 14 bits 是网络 ID（16,000 个网络），再接下来的 16 bits 是主机 ID（65,000 台主机）。
 
-鎴戜滑鐨勭涓夌 hierarchical addressing 鏂规硶锛屼篃鏄幇浠?Internet 浠嶅湪浣跨敤鐨勬柟娉曪紝鏄?**CIDR**锛圕lassless Inter-Domain Routing锛夈€傚湪 CIDR 涓紝鎴戜滑浠嶇劧浣跨敤鍙彉闀垮害鐨?network ID锛屼絾涓嶅啀鍙湁 3 绉嶄笉鍚岀殑 network ID 闀垮害锛圕lass A銆丅銆丆锛夛紝鑰屾槸璁╁浐瀹?bit 鐨勬暟閲忎换鎰忓彲鍙樸€?
-渚嬪锛岃€冭檻鍓嶉潰閭ｅ鍙湁 10 鍚嶅憳宸ョ殑灏忓叕鍙搞€傚湪 classful addressing 涓紝瀹冧細寰楀埌涓€涓?Class C network锛屼篃灏辨槸 256 涓?host address銆傚鏋滃畠鍙渶瑕?10 涓?host address锛屾垜浠彲浠ョ粰瀹冩洿闀跨殑 network ID锛屼粠鑰屽垎閰嶆洿灏戠殑 address銆?
-濡傛灉鍒嗛厤 28-bit network ID锛宧ost ID 灏辨槸 4 bits锛?6 涓彲鑳界殑 address锛夈€傚鏋滃垎閰?29-bit network ID锛宧ost ID 灏辨槸 3 bits锛? 涓彲鑳界殑 address锛夈€傛垜浠棤娉曠簿纭垎閰?10 涓?address锛屼絾 28-bit network ID 宸茬粡瓒冲杩欏鍏徃浣跨敤銆傝繖閲屼細鏈変竴鐐规氮璐癸紙6 涓湭浣跨敤 address锛夛紝浣嗕粛鐒惰繙濂戒簬鍒嗛厤 256 涓?address銆?
-鍐嶄妇涓€涓緥瀛愶紝鑰冭檻涓€涓渶瑕?450 涓?host address 鐨勭粍缁囥€傚湪 classful addressing 涓紝Class C锛?56 涓?address锛変笉澶燂紝鎵€浠ュ畠浼氭敹鍒颁竴涓?Class B network锛屾嫢鏈?65000 涓?host address锛屽叾涓ぇ澶氭暟 address 閮戒笉浼氳浣跨敤銆傛湁浜嗕换鎰忛暱搴︾殑 network ID锛屾垜浠彲浠ュ垎閰?23-bit network ID锛岀暀涓?9 bits 鐢ㄤ簬 host addressing锛?12 涓?address锛夈€傝繖鑳芥弧瓒崇粍缁囬渶姹傦紝骞舵氮璐瑰皯寰楀鐨?address銆?
+Class C 地址以最高位 `110` 开头。接下来的 21 bits 是网络 ID（200 万个网络），再接下来的 8 bits 是主机 ID（256 台主机）。
 
-## 澶氬眰 Hierarchical Assignment
+采用这种方法后，我们可以拥有 200 万 + 16,000 + 128 个不同的本地网络。主机更多的大型组织可以获得 Class A 网络，较小的组织可以获得 Class B 或 Class C 网络。和之前一样，在同一个网络内部，最高类别 bit 和网络 ID bits 相同，每台主机获得不同的主机 ID。
 
-鐜板疄涓殑 hierarchy 鍙互鏈夊緢澶氬眰銆備緥濡傦紝鍦ㄤ竴涓?network 鍐呴儴锛岀粍缁囧彲浠ラ€夋嫨鎶婄壒瀹?address range 鍒嗛厤缁欑壒瀹?sub-organization锛堜緥濡傚叕鍙告垨澶у閲岀殑閮ㄩ棬锛夈€?
-瀹炶返涓紝鎴戜滑浼氬埄鐢ㄧ幇瀹炰笘鐣屼腑澶氬眰鐨勭粍缁囧拰鍦扮悊 hierarchy 鏉ュ垎閰?address銆侷CANN锛圛nternet Corporation for Names and Numbers锛夋槸鎷ユ湁鎵€鏈?IP address 鐨勫叏鐞冪粍缁囥€?
-ICANN 浼氭妸 address block 鍙戠粰 Regional Internet Registry锛圧IR锛夛紝姣忎釜 RIR 浠ｈ〃鐗瑰畾鍥藉鎴栧ぇ闄嗐€備緥濡傦紝RIPE 鑾峰緱娆х洘鐨勬墍鏈?address锛孉RIN 鑾峰緱鍖楃編 address锛孉PNIC 鑾峰緱浜氭床/澶钩娲?address锛孡ACNIC 鑾峰緱鍗楃編 address锛孉FRINIC 鑾峰緱闈炴床 address銆備緥瀛愶細ICANN 鎶婃墍鏈変互 1101 寮€澶寸殑 address 缁?ARIN銆?
-鐒跺悗锛屾瘡涓?RIR 浼氭妸鑷繁 range 鐨勪竴閮ㄥ垎鍒嗛厤缁欏ぇ鍨嬬粍缁囷紙渚嬪鍏徃銆佸ぇ瀛︼級鎴?ISP銆傝繖浜涚粍缁囨垨 ISP 绉颁负 Local Internet Registry銆備緥瀛愶細ARIN 鎺у埗鎵€鏈変互 1101 寮€澶寸殑 address锛屽苟鎶婃墍鏈変互 1101 11001 寮€澶寸殑 address 缁?AT&T銆?
-鏈€鍚庯紝姣忎釜 local Internet registry 浼氭妸鍗曚釜 IP 鍒嗛厤缁欏叿浣?host銆備负浜嗗鍔?hierarchy锛宭ocal registry 涔熷彲浠ユ妸 IP range 鍒嗛厤缁欏皬缁勭粐锛屽皬缁勭粐鍐嶅垎閰嶅崟涓?IP銆?
+分类寻址的一个主要问题是每一类的大小。Class A（1,600 万台主机）对大多数组织而言太大，而 Class C（256 台主机）对大多数组织而言太小。因此，大多数网络需要落在 Class B 中。
+
+不幸的是，Class B 网络 ID 只有 16,000 个。到 1994 年，我们已经快要用完 Class B 网络了。因此，又需要一种新的编址方法。
+
+注意：在现代 Internet 中，分类寻址已经过时。
+
+注意：严格来说，每个网络中的主机数量要少 2，因为全 0 地址和全 1 地址保留给特殊用途。例如，在 Class C 中，每个网络实际上有 254 台主机，而不是 256 台。
+
+## 分配分层 IP 地址：CIDR
+
+第三种分层寻址方法，也是现代 Internet 仍在使用的方法，是 **CIDR**（Classless Inter-Domain Routing，无类别域间路由）。在 CIDR 中，我们仍然使用变长的网络 ID，但不再只有 3 种不同的网络 ID 长度（Class A、B、C），而是让固定 bit 的数量任意可变。
+
+例如，考虑前面那家只有 10 名员工的小公司。在分类寻址中，它会获得一个 Class C 网络，即 256 个主机地址。若它只需要 10 个主机地址，我们可以通过分配更长的网络 ID 来为它分配更少的地址。
+
+如果分配 28-bit 的网络 ID，主机 ID 就是 4 bits（16 个可能的地址）。如果分配 29-bit 的网络 ID，主机 ID 就是 3 bits（8 个可能的地址）。我们无法恰好分配 10 个地址，但 28-bit 的网络 ID 已足以满足这家公司的需求。这里会有一点浪费（6 个未使用的地址），但仍远好于分配 256 个地址。
+
+再举一个例子，考虑一个需要 450 个主机地址的组织。在分类寻址中，Class C（256 个地址）不够用，因此它会获得一个 Class B 网络，拥有 65,000 个主机地址，其中大多数地址都不会被使用。有了任意长度的网络 ID，我们可以分配一个 23-bit 的网络 ID，留下 9 bits 用于主机编址（512 个地址）。这能满足该组织的需求，并浪费少得多的地址。
+
+## 多层分层分配
+
+现实中的层级结构可以有多层。例如，在一个网络内部，组织可以选择将特定地址范围分配给特定的子组织（例如公司或大学中的部门）。
+
+在实践中，我们利用现实世界中多层的组织与地理层级结构来分配地址。ICANN（Internet Corporation for Names and Numbers）是拥有所有 IP 地址的全球组织。
+
+ICANN 会将地址块分配给区域互联网注册管理机构（Regional Internet Registry，RIR），每个 RIR 代表特定国家或大洲。例如，RIPE 获得欧盟的所有地址，ARIN 获得北美地址，APNIC 获得亚太地址，LACNIC 获得南美地址，AFRINIC 获得非洲地址。示例：ICANN 将所有以 `1101` 开头的地址分配给 ARIN。
+
+接着，每个 RIR 会将自己范围的一部分分配给大型组织（例如公司、大学）或 ISP。这些组织或 ISP 称为本地互联网注册管理机构（Local Internet Registry）。示例：ARIN 控制所有以 `1101` 开头的地址，并将所有以 `1101 11001` 开头的地址分配给 AT&T。
+
+最后，每个本地互联网注册管理机构会将单个 IP 分配给具体主机。为了增加层级，本地注册管理机构也可以将 IP 范围分配给小型组织，小型组织再依次分配单个 IP。
+
 <img width="700px" src="../assets/routing/2-108-cidr3.png">
 
-鍦ㄦ瘡涓€灞傦紝棰濆鍥哄畾澶氬皯 bit 鍙栧喅浜庤鍒嗛厤澶氬皯 address銆備緥濡傦紝ARIN 鍙兘鎯崇粰 AT&T 800 涓囦釜 address锛屽苟璁＄畻鍑哄浐瀹?9 bits 浼氬緱鍒?800 涓囦釜 host address銆侫RIN 宸茬粡鍥哄畾浜?4 bits锛屾墍浠ュ畠鍐嶅浐瀹?5 bits锛屽苟鎶婃墍鏈変互杩?9 bits 寮€澶寸殑 address 鍒嗛厤缁?AT&T銆侫T&T 鎺ョ潃鍙兘鎶?prefix 1101 11001 110100010 缁?UC Berkeley锛屼粠鑰屾彁渚?16000 涓?address銆傞殢鐫€鎴戜滑鍚?sub-organization 鍒嗛厤 address锛屾洿澶?bit 浼氳鍥哄畾锛屽苟涓斿缁堜繚鐣?parent organization 宸茬粡鍥哄畾鐨?bit銆?
+在每一层，额外固定多少个 bit 取决于要分配多少个地址。例如，ARIN 可能想给 AT&T 分配 800 万个地址，并计算出固定 9 bits 会得到 800 万个主机地址。ARIN 已经固定了 4 bits，因此它再固定 5 bits，并将所有以这 9 bits 开头的地址分配给 AT&T。随后，AT&T 可能将前缀 `1101 11001 110100010` 分配给 UC Berkeley，以提供 16,000 个地址。随着我们向子组织分配地址，更多 bit 会被固定，同时始终保留父组织已经固定的 bit。
 
-## IP Address 鍐欐硶
+## IP 地址的写法
 
-鎴戜滑鍙互鎶?IP address 鍐欐垚 32-bit 鐨?1 鍜?0 搴忓垪锛屼篃鍙互鍐欐垚涓€涓緢澶х殑鏁存暟銆傚疄璺典腑锛屼负浜嗗彲璇绘€э紝鎴戜滑鎶婃瘡涓€缁?8 bits 鍐欐垚涓€涓暣鏁帮紙鑼冨洿鏄?0 鍒?255锛夈€備緥濡傦紝IP address 00010001 00100010 10011110 00000101 鍙互鍐欐垚 17.34.158.5銆傝繖鏈夋椂绉颁负 **dotted quad锛堢偣鍒嗗洓娈碉級** 琛ㄧず娉曘€?
-鍒扮洰鍓嶄负姝紝鎴戜滑涓€鐩存妸 address range 鍐欐垚 bit锛堜緥濡傛墍鏈変互 1101 寮€澶寸殑 IP锛夈€備负浜嗗啓鍑轰竴涓?address range锛屾垜浠彲浠ヤ娇鐢?**slash notation锛堟枩鏉犺〃绀烘硶锛?*銆傛垜浠厛鍐欏嚭鍥哄畾 prefix锛岀劧鍚庝负鎵€鏈夊墿浣欑殑鏈浐瀹?bit 鍐?0锛屽苟鎶婂緱鍒扮殑 32-bit 鍊艰浆鎹㈡垚 dotted quad IP address銆傜劧鍚庯紝鍦?slash 鍚庨潰鍐欏嚭鍥哄畾 bit 鐨勬暟閲忋€?
-渚嬪锛屽鏋?prefix 鏄?11000000锛屾垜浠负鎵€鏈夋湭鍥哄畾 bit 娣诲姞 0锛屽緱鍒?11000000 00000000 00000000 00000000銆備綔涓?32-bit address锛屽畠鏄?192.0.0.0銆傜劧鍚庯紝鍥犱负鍥哄畾浜?8 bits锛屾垜浠妸杩欎釜 range 鍐欎綔 192.0.0.0/8銆?
-濡傛灉瑕佹妸鍗曚釜 address 鍐欐垚 range锛屽彲浠ュ啓鎴愮被浼?192.168.1.1/32锛岃〃绀烘墍鏈?32 bits 閮藉浐瀹氥€傚彟澶栵紝default route *.* 鍙互鍐欐垚 0.0.0.0/0銆?
-Slash notation 鏈夋椂鐪嬭捣鏉ユ湁鐐硅糠鎯戯紝鍥犱负鎴戜滑浣跨敤浠绘剰鐨?8-bit 鍒嗘锛屽苟鐢ㄥ崄杩涘埗鏁板瓧涔﹀啓銆備緥濡傦紝8-bit prefix 11000000 鍜?12-bit prefix 11000000 0000 閮戒細鍐欐垚 192.0.0.0/8 鍜?192.0.0.0/12锛堝悓涓€涓?IP address 琛ㄧず涓嶅悓 range锛夈€傚啀涓句竴涓緥瀛愶紝濡傛灉鎴戞嫢鏈?4-bit prefix 1100锛屽氨鍙互鍒嗛厤 5-bit prefix 11001銆備綔涓?range锛屽畠浠啓鎴?192.0.0.0/4 鍜?200.0.0.0/5銆備箥鐪嬩箣涓嬶紝寰堥毦鐪嬪嚭绗簩涓?range 瀹為檯涓婃槸绗竴涓?range 鐨勫瓙闆嗭紝蹇呴』鍐欏嚭 bit 鎵嶈兘纭銆?
-Slash notation 涓?slash锛堜緥濡?/16锛夌殑鍙︿竴绉嶆浛浠ｆ柟寮忔槸 **netmask锛堢綉缁滄帺鐮侊級**銆傚拰 slash 鍚庨潰鐨勬暟瀛椾竴鏍凤紝netmask 鍛婅瘔鎴戜滑鍝簺 bit 鏄浐瀹氱殑銆備负浜嗗啓 netmask锛屾垜浠妸鎵€鏈夊浐瀹?bit 鍐欐垚 1锛屾墍鏈夋湭鍥哄畾 bit 鍐欐垚 0锛屽苟鎶婄粨鏋滆浆鎹㈡垚 dotted quad銆備緥濡傦紝濡傛灉 range 鏄?192.168.1.0/29锛屾垜浠彲浠ュ啓鍑?29 涓?1锛堝浐瀹?bit锛夊拰 3 涓?0锛堟湭鍥哄畾 bit锛夈€?1111111 11111111 11111111 11111000 鍐欐垚 dotted quad 鏄?255.255.255.248銆傜敤 netmask notation 琛ㄧず鏃讹紝杩欎釜 range 鏄?192.168.1.0锛宯etmask 鏄?255.255.255.248锛堢敤 netmask 鏇夸唬 slash锛夈€?
-鍦ㄨ繖浜涜涔変腑锛屾垜浠€氬父浣跨敤 slash notation锛屽洜涓哄畠鏇存柟渚块槄璇汇€傚疄璺典腑锛宯etmask 涔熷緢鏈夌敤锛氱粰瀹氫竴涓叿浣?IP address锛屽鏋滀綘鍦?IP address 鍜?netmask 涔嬮棿鎵ц bitwise AND锛屾墍鏈?host bit 閮戒細琚竻闆讹紝鍙墿涓?network bit銆?
+我们可以将 IP 地址写成由 `1` 和 `0` 构成的 32-bit 序列，也可以写成一个很大的整数。实践中，为了可读性，我们将每一组 8 bits 写成一个整数（范围为 0 到 255）。例如，IP 地址 `00010001 00100010 10011110 00000101` 可以写成 `17.34.158.5`。这种表示法有时称为**点分四组表示法（dotted quad representation）**。
 
-## 鐢?CIDR 鑱氬悎 Route
+到目前为止，我们一直将地址范围写成 bit（例如，所有以 `1101` 开头的 IP）。为了写出一个地址范围，我们可以使用**斜杠表示法（slash notation）**。先写出固定的前缀，再为所有其余未固定的 bit 写 `0`，并将得到的 32-bit 值转换为点分四组 IP 地址。然后在斜杠后写出固定 bit 的数量。
 
-鍦ㄦ垜浠渶鍒濈殑 network ID 鍜?host ID 妯″瀷涓紝鍙互鎶婂悓涓€涓?network 鍐呴儴鐨勬墍鏈?host 鑱氬悎鎴?forwarding table 涓殑涓€鏉?route锛堜緥濡?2.* 琛ㄧず network 2 涓殑涓€鍒囷級銆?
-澶氬眰 hierarchical addressing 鎰忓懗鐫€锛屾垜浠篃鍙互鎶婂涓?network 鑱氬悎鎴愪竴鏉?route銆?
+例如，如果前缀是 `11000000`，我们为所有未固定的 bit 添加 `0`，得到 `11000000 00000000 00000000 00000000`。作为一个 32-bit 地址，它是 `192.0.0.0`。然后，因为固定了 8 bits，我们将此范围写成 `192.0.0.0/8`。
+
+要将单个地址写成一个范围，可以写成类似 `192.168.1.1/32`，表示全部 32 bits 都已固定。此外，默认路由 `*.*` 可以写成 `0.0.0.0/0`。
+
+斜杠表示法有时看起来有些令人困惑，因为我们使用任意的 8-bit 分段，并以十进制书写数字。例如，8-bit 前缀 `11000000` 和 12-bit 前缀 `11000000 0000` 分别写成 `192.0.0.0/8` 和 `192.0.0.0/12`（同一个 IP 地址表示不同的范围）。再举一例：如果我拥有 4-bit 前缀 `1100`，就可以分配 5-bit 前缀 `11001`。作为范围，它们写成 `192.0.0.0/4` 和 `200.0.0.0/5`。乍看之下，很难看出第二个范围其实是第一个范围的子集，必须写出 bit 才能确认。
+
+斜杠表示法中斜杠（例如 `/16`）的另一种替代方式是**网络掩码（netmask）**。与斜杠后的数字一样，网络掩码告诉我们哪些 bit 是固定的。要写出网络掩码，我们将所有固定 bit 写成 `1`，所有未固定 bit 写成 `0`，并将结果转换成点分四组表示法。例如，如果范围是 `192.168.1.0/29`，我们可以写出 29 个 `1`（固定 bit）和 3 个 `0`（未固定 bit）。`11111111 11111111 11111111 11111000` 写成点分四组表示法就是 `255.255.255.248`。使用网络掩码表示法时，这个范围是 `192.168.1.0`，网络掩码是 `255.255.255.248`（用网络掩码替代斜杠）。
+
+在这些讲义中，我们通常使用斜杠表示法，因为它更便于阅读。实践中，网络掩码也很有用：给定一个具体 IP 地址，如果在该 IP 地址和网络掩码之间执行按位 AND（bitwise AND），所有主机 bit 都会被清零，只剩下网络 bit。
+
+## 使用 CIDR 聚合路由
+
+在最初的网络 ID 和主机 ID 模型中，我们可以将同一网络内的所有主机聚合为转发表中的一条路由（例如，`2.*` 表示网络 2 中的一切）。
+
+多层分层寻址意味着，我们也可以将多个网络聚合为一条路由。
+
 <img width="900px" src="../assets/routing/2-109-aggregation1.png">
 
-鑰冭檻杩欏紶 network 鍥俱€傚湪鏈€鍒濈殑妯″瀷涓紝R6 闇€瑕佸垎鍒负 AT&T銆乁CB 鍜?Stanford 鍑嗗 forwarding entry銆?
+考虑这张网络图。在最初的模型中，R6 需要分别为 AT&T、UCB 和 Stanford 准备转发表项。
+
 <img width="900px" src="../assets/routing/2-110-aggregation2.png">
 
-鐒惰€岋紝濡傛灉浣跨敤 hierarchical addressing锛岄偅涔?UCB 鐨?range锛?.12.0.0/16锛夊拰 Stanford 鐨?range锛?.29.0.0/16锛夐兘鏄?AT&T 鐨?range锛?.0.0.0/8锛夌殑瀛愰泦銆傚鏋?AT&T 鎶婅繖浜?range 鍒嗛厤缁欒嚜宸辩殑涓嬫父瀹㈡埛 UCB 鍜?Stanford锛屽氨鍙兘鍑虹幇杩欑鎯呭喌銆?
-鐜板湪锛孯6 鍙渶瑕佷竴鏉?entry 灏辫兘琛ㄧず AT&T銆乁CB 鍜?Stanford銆傛垜浠妸涓や釜杈冨皬鐨?range 鑱氬悎杩涗簡瀹冧滑鍏卞悓鎵€灞炵殑鏇村ぇ range銆?
+然而，如果使用分层寻址，UCB 的范围（`4.12.0.0/16`）和 Stanford 的范围（`4.29.0.0/16`）都是 AT&T 范围（`4.0.0.0/8`）的子集。如果 AT&T 将这些范围分配给其下游客户 UCB 和 Stanford，就可能出现这种情况。
 
-## Multi-Homing
+现在，R6 只需一条表项就能表示 AT&T、UCB 和 Stanford。我们将两个较小的范围聚合进它们共同所属的更大范围。
 
-鑱氬悎 range 骞朵笉鎬绘槸鏈夋晥銆傚亣璁炬垜浠坊鍔犱竴鏉′粠 R6 鐩存帴鍒?Stanford 鐨?link銆?
+## 多宿主（Multi-Homing）
+
+聚合地址范围并不总是有效。假设我们添加一条从 R6 直接连接到 Stanford 的链路。
+
 <img width="900px" src="../assets/routing/2-111-aggregation3.png">
 
-鑱氬悎鍚庣殑 route 璇达紝鎵€鏈夊彂寰€ AT&T锛堜互鍙婂畠鐨勪笅绾э級鐨?packet锛宯ext hop 閮芥槸 R2銆傛垜浠渶瑕佹坊鍔犱竴鏉￠澶?entry锛岃〃绀?Stanford 鐨?next hop 鏄?R7銆?
-娉ㄦ剰锛屾垜浠殑 forwarding table 鐜板湪鏈変簡褰兼閲嶅彔鐨?range銆備竴涓?destination 鍙兘鍖归厤澶氫釜 range銆備负浜嗛€夋嫨 route锛屾垜浠細杩愯 **longest prefix matching锛堟渶闀垮墠缂€鍖归厤锛?*锛屼篃灏辨槸浣跨敤涓?destination IP address 鍖归厤鐨勬渶鍏蜂綋 range銆備緥濡傦紝濡傛灉鏈変竴涓?packet 鍙戝線 UCM host锛屾垜浠細浣跨敤 UCM 涓撳睘 entry锛屽洜涓哄畠鏈夋洿闀跨殑 19-bit prefix銆傚嵆浣?9-bit AT&T entry 涔熷尮閰嶈繖涓?destination锛屽畠鐨?prefix 鏇寸煭锛屾墍浠ユ垜浠笉鐢ㄨ繖鏉?route銆?
-濡傛灉鎴戜滑鏈変竴涓?packet 鍙戝線 UCB host锛屽氨涓嶈兘浣跨敤 Stanford 涓撳睘 entry锛屽洜涓?16-bit prefix 涓嶄細鍖归厤 UCB host銆備絾鎴戜滑浠嶇劧鍙互浣跨敤 8-bit AT&T entry锛屽畠浼氬尮閰嶈繖涓?destination銆?
+聚合后的路由表明，所有发往 AT&T（及其下属组织）的数据包（packet）下一跳都是 R2。我们需要添加一条额外表项，表明 Stanford 的下一跳是 R7。
 
-## IPv6 绠€鍙?
-IPv4 address 鏄?32 bits锛岃繖鎰忓懗鐫€鎴戜滑澶х害鏈?40 浜夸釜鍙敤 address銆傝繖澶熷悧锛?
+注意，我们的转发表现在有了彼此重叠的范围。一个目的地可能匹配多个范围。为了选择路由，我们会执行**最长前缀匹配（longest prefix matching）**，即使用与目的地 IP 地址匹配的、最具体的范围。例如，如果有一个数据包发往 UCM 主机，我们会使用 UCM 专属表项，因为它具有更长的 19-bit 前缀。即使 9-bit 的 AT&T 表项也匹配该目的地，它的前缀更短，因此我们不使用这条路由。
+
+如果数据包发往 UCB 主机，就不能使用 Stanford 专属表项，因为 16-bit 前缀不会匹配 UCB 主机。不过，我们仍可以使用 8-bit 的 AT&T 表项，它会匹配该目的地。
+
+## IPv6 简史
+
+IPv4 地址为 32 bits，这意味着我们大约有 40 亿个可用地址。这够吗？
+
 <img width="900px" src="../assets/routing/2-112-ipv6-1.png">
 
-杩欏紶鍥惧睍绀轰簡姣忎釜 regional registry 闅忔椂闂村墿浣欑殑鏈垎閰?IP address 鏁伴噺锛坹 杞达級銆?
-鍒?2017 骞达紝鎵€鏈変汉鍙敤鐨?address 閮藉皯浜庝竴涓?/8 block锛堜篃灏辨槸灏戜簬 2\^24 = 1600 涓囦釜 address锛夈€傛瘡涓?regional registry 閮戒繚鐣欎簡涓€涓鐢?/8 block锛屼互闃蹭竾涓€锛涗絾鍒?2017 骞达紝鎵€鏈変汉閮戒笉寰椾笉寮€濮嬩娇鐢ㄨ嚜宸辩殑澶囩敤 address銆傚埌 2021 骞达紝杩炲鐢?address 涔熷揩鐢ㄥ畬浜嗐€?
-涓€涓皬鎻掓洸锛?011 骞?2 鏈堬紝鏈€鍚庝竴涓?/8 block 琚垎閰嶆椂锛岃繕涓捐浜嗕竴鍦虹嚎涓嬩华寮忥紝鐢氳嚦鍙戞斁浜嗙壒鍒殑绾歌川璇佷功銆?
-闅忕潃 Internet 澧為暱锛屾垜浠紑濮嬫剰璇嗗埌 address 缁堟湁涓€澶╀細鑰楀敖銆傚垢杩愮殑鏄紝杩欎竴鐐瑰緢鏃╁氨琚剰璇嗗埌锛屼簬鏄?IPv6 鍦?1998 骞磋寮€鍙戝嚭鏉ワ紝鐢ㄦ潵搴斿 IP address exhaustion锛圛P 鍦板潃鑰楀敖锛夈€?
-浠庢牴鏈笂璇达紝IPv6 鐨?addressing structure 涓?IPv4 鐩稿悓銆侷Pv6 闇€瑕佷竴浜涜緝灏忕殑瀹炵幇鏀瑰姩锛屼笉杩囪繖浜涗笌杩欓噷鐨勮璁烘棤鍏炽€?
-IPv6 鐨勪富瑕佹柊鐗规€ф槸鏇撮暱鐨?address銆侷Pv6 address 闀?128 bits锛岃繖鎰忓懗鐫€澶х害鏈?$3.4 \times 10^{38}$ 涓彲鑳界殑 address銆傝繖鏄竴涓ぉ鏂囨暟瀛楋紝鎵€浠ユ垜浠案杩滀笉浼氱敤瀹屻€傚畤瀹欑殑骞撮緞鏄?$10^{21}$ 绉掞紝鎵€浠ュ嵆浣挎垜浠粰姣忎竴绉掗兘鍒嗛厤涓€涓?address锛屼篃鍙敤浜嗘墍鏈夊彲鐢?address 鐨?0.000000000000001%銆?
+这张图绘制了各区域注册管理机构随时间变化的剩余未分配 IP 地址数量（纵轴）。
+
+到 2017 年，所有人可用的地址都少于一个 `/8` 块（即少于 $2^24 = 1600$ 万个地址）。每个区域注册管理机构都保留了一个备用 `/8` 地址块以防万一；但到 2017 年，所有人都不得不开始使用自己的备用地址。到 2021 年，即使备用地址也快耗尽了。
+
+小知识：2011 年 2 月，最后一个 `/8` 地址块被分配时，还举行了一场线下仪式，甚至颁发了特别的纸质证书。
+
+随着 Internet 增长，我们开始意识到地址终有一天会耗尽。幸运的是，这一点很早就被意识到，因此 IPv6 在 1998 年被开发出来，用以应对 IP 地址耗尽（IP address exhaustion）。
+
+从根本上说，IPv6 的编址结构与 IPv4 相同。IPv6 需要进行一些较小的实现改动，不过这些与这里的讨论无关。
+
+IPv6 的主要新特性是更长的地址。IPv6 地址长 128 bits，这意味着大约有 $3.4 \times 10^{38}$ 个可能的地址。这是一个天文数字，因此我们永远不会用完。宇宙的年龄为 $10^{21}$ 秒，所以即使每秒都分配一个地址，也只会用掉所有可用地址的 0.000000000000001%。
+
 <img width="900px" src="../assets/routing/2-113-ipv6-2.png">
 
-IPv6 寮€鍙戜簬 1990 骞翠唬锛屼絾骞舵病鏈夌珛鍒昏鎵€鏈夎绠楁満閲囩敤銆傚嵆浣垮湪 2010 骞达紝鍩烘湰涓婁篃娌′汉浣跨敤 IPv6銆傛埅鑷?2024 骞达紝绾?45% 鐨?end user 浣跨敤 IPv6锛岃€屼笖鍏朵腑澶у鏁扮敤鎴蜂綅浜?Internet 閲囩敤鐜囪緝楂樼殑鍙戣揪鍥藉銆侷Pv6 瓒婃潵瓒婂箍娉涢噰鐢ㄧ殑涓昏鍘熷洜锛屾槸 IPv4 address 姝ｅ湪鑰楀敖銆?
-涓轰粈涔?IPv6 閲囩敤杩欎箞鎱紵鐢ㄦ埛銆佹湇鍔″櫒鍜?Internet 杩愯惀鑰呴兘蹇呴』鍗囩骇杞欢鍜岀‖浠讹紙渚嬪 router銆乴ink銆佽绠楁満涓婄殑 device driver锛夋潵鏀寔 IPv6銆俁outer 鐜板湪闇€瑕佷袱寮?forwarding table锛屼竴寮犵敤浜?IPv4 address锛屼竴寮犵敤浜?IPv6 address銆?
-IPv6 upgrade 蹇呴』淇濇寔 backward-compatible銆傚鏋滄煇涓湇鍔″櫒鍙湁 IPv6 address锛屼娇鐢ㄥ彧鏀寔 IPv4 鐨勬棫鐢佃剳鐨勭敤鎴峰氨鏃犳硶浣跨敤杩欎釜鏈嶅姟鍣ㄣ€侷Pv4 鍜?IPv6 鏈川涓婃槸褰兼鐙珛鐨?addressing system锛屾病鏈夊姙娉曞湪 IPv4 鍜?IPv6 address 涔嬮棿杞崲銆傛埅鑷?2024 骞达紝璁稿璁＄畻鏈轰粛鐒朵笉鏀寔 IPv6锛屽洜姝よ澶氭湇鍔￠渶瑕佸悓鏃舵敮鎸?IPv4 鍜?IPv6銆?
-鍚屾椂鏀寔 IPv4 鍜?IPv6 鐨勮绠楁満杩樺繀椤昏€冭檻浣跨敤鍝竴涓€傛煇涓€涓竴瀹氭洿濂藉悧锛熷疄璺典腑锛孖Pv6 鏇村揩锛屼絾璁稿鍏朵粬瀹炵幇缁嗚妭涔熶細褰卞搷浣犵殑閫夋嫨銆?
+IPv6 开发于 1990 年代，但并未立即被所有计算机采用。即使在 2010 年，基本上也没有人使用 IPv6。截至 2024 年，约 45% 的终端用户（end user）使用 IPv6，其中大多数用户位于 Internet 普及率更高的发达国家。IPv6 越来越广泛采用的主要原因，是 IPv4 地址正在耗尽。
 
-## IPv6 Address Notation
+为什么 IPv6 的采用如此缓慢？用户、服务器和 Internet 运营者都必须升级软件和硬件（例如路由器、链路、计算机上的设备驱动程序），以支持 IPv6。路由器现在需要两张转发表：一张使用 IPv4 地址，另一张使用 IPv6 地址。
 
-IPv6 address 閫氬父鐢ㄥ崄鍏繘鍒惰€屼笉鏄崄杩涘埗涔﹀啓銆備緥濡傦細
+IPv6 升级必须保持向后兼容（backwards-compatible）。如果某台服务器只有 IPv6 地址，使用只支持 IPv4 的旧计算机的用户就无法使用该服务器。IPv4 和 IPv6 本质上是彼此独立的编址系统，无法在 IPv4 地址和 IPv6 地址之间转换。截至 2024 年，许多计算机仍不支持 IPv6，因此许多服务需要同时支持 IPv4 和 IPv6。
 
-2001:0D08:CAFE:BEEF:DEAD:1234:5678:9012
+同时支持 IPv4 和 IPv6 的计算机还必须考虑使用哪一个。某个版本一定更好吗？实践中，IPv6 更快，但许多其他实现细节也会影响你的选择。
 
-杩欐槸涓€涓?IPv6 address锛?2 涓崄鍏繘鍒舵暟瀛?= 128 bits锛夈€備负浜嗗彲璇绘€э紝鎴戜滑鍦ㄦ瘡 4 涓崄鍏繘鍒舵暟瀛楋紙16 bits锛変箣闂村姞涓€涓啋鍙枫€?
-涓轰簡鍙鎬э紝鎴戜滑鍙互鐪佺暐姣忎釜 4 浣嶅潡涓殑 leading zero銆備緥濡傦細
+## IPv6 地址表示法
 
-2001:0DB8:0000:0000:0000:0000:0000:0001
+IPv6 地址通常以十六进制而非十进制书写。例如：
 
-鍙互缂╃煭涓?2001:DB8:0:0:0:0:0:1銆?
-涓轰簡鍙鎬э紝鎴戜滑杩樺彲浠ョ渷鐣ヤ竴闀夸覆 0锛屼緥濡?2001:DB8::1銆傚弻鍐掑彿琛ㄧず鎶婃墍鏈夌己澶辩殑 4 浣嶅潡閮藉～鎴?0000銆傛瘡涓?address 鍙兘杩欐牱鍋氫竴娆°€傦紙鐪佺暐涓ゆ range 浼氶€犳垚姝т箟锛屽洜涓烘垜浠笉鐭ラ亾姣忔搴旇濉灏戜釜 0銆傦級
+`2001:0D08:CAFE:BEEF:DEAD:1234:5678:9012`
 
-Slash notation 鍦?IPv6 涓粛鐒跺彲浠ヤ娇鐢ㄣ€傚崟涓?address 鏄?/128锛堟墍鏈?bit 鍥哄畾锛夈€備竴涓?32-bit prefix 鍙兘鍐欐垚 2001:0DB8::/32銆?
-鐢变簬 address space 鏋佸ぇ锛屽湪 IPv6 涓紝浣犲彲浠ユ妸 network ID 鍥哄畾涓?64 bits锛屾妸 host ID 涔熷浐瀹氫负 64 bits锛屽苟涓斾粛鐒舵案杩滀笉浼氱敤瀹?network ID 鎴?host ID銆備簨瀹炰笂锛屾湁涓€浜涚壒娈?protocol 鍏佽 network 鍜?host 閫夋嫨鑷繁鐨?64-bit network ID 鍜?host ID锛堝苟妫€鏌ユ病鏈夊埆浜烘鍦ㄤ娇鐢ㄥ畠锛夛紝鑰屼笉闇€瑕佹煇涓粍缁囧垎閰嶅叿浣?ID銆?
-瀹炶返涓紝regional registry 閫氬父鎶?32-bit prefix 鍒嗛厤缁?ISP锛孖SP 閫氬父鎶?48-bit prefix 鍒嗛厤缁欑粍缁囥€傜劧鍚庯紝缁勭粐鍙互鎶?64-bit prefix 鍒嗛厤缁欐洿灏忕殑 sub-network銆傚湪 IPv6 涓紝鎴戜滑閫氬父涓嶄細鐪嬪埌闀夸簬 /64 鐨?prefix銆傚嵆浣挎槸缁勭粐鍐呴儴鏈€灏忕殑 sub-network锛屼篃鏈?64-bit prefix锛屽苟鐢?64 bits 涓哄叿浣?host 缂栧潃銆備娇鐢ㄨ繖浜涙爣鍑嗗寲 prefix size 鍙互璁?prefix 鎼哄甫鏇村淇℃伅銆備緥濡傦紝鍦?IPv4 涓紝寰堥毦鐪嬪嚭涓€涓?/19 prefix 琛ㄧず浠€涔堬紱浣嗗湪 IPv6 涓紝鎴戜滑鐭ラ亾 /32 prefix 閫氬父琛ㄧず涓€涓?ISP銆俆ODO double check this
+这是一个 IPv6 地址（32 个十六进制数字 = 128 bits）。为提高可读性，我们在每 4 个十六进制数字（16 bits）之间添加一个冒号。
+
+为提高可读性，我们可以省略每个 4 位块中的前导零（leading zero）。例如：
+
+`2001:0DB8:0000:0000:0000:0000:0000:0001`
+
+可以缩写为 `2001:DB8:0:0:0:0:0:1`。
+
+为提高可读性，我们还可以省略一长串零，例如 `2001:DB8::1`。双冒号表示将所有缺失的 4 位块补成 `0000`。每个地址只能这样做一次。（省略两段范围会造成歧义，因为我们不知道每段应填入多少个零。）
+
+斜杠表示法在 IPv6 中仍然可以使用。单个地址是 `/128`（所有 bit 均固定）。一个 32-bit 前缀可能写成 `2001:0DB8::/32`。
+
+由于地址空间极大，在 IPv6 中，你可以将网络 ID 固定为 64 bits，将主机 ID 也固定为 64 bits，并且仍然永远不会用完网络 ID 或主机 ID。事实上，存在一些特殊协议，允许网络和主机选择自己的 64-bit 网络 ID 和主机 ID（并检查没有其他人正在使用它），而不需要由某个组织分配具体 ID。
+
+实践中，区域注册管理机构通常将 32-bit 前缀分配给 ISP，ISP 通常将 48-bit 前缀分配给组织。该组织随后可以将 64-bit 前缀分配给更小的子网络。在 IPv6 中，我们通常不会看到长于 `/64` 的前缀。即使是组织内部最小的子网络，也有一个 64-bit 前缀，并使用 64 bits 为具体主机编址。使用这些标准化前缀长度，可以让前缀携带更多信息。例如，在 IPv6 中，很难看出 `/19` 前缀表示什么；但在 IPv6 中，我们知道 `/32` 前缀通常表示一个 ISP。TODO：请复核此处。
